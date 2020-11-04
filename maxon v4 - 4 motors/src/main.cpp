@@ -59,7 +59,7 @@ void setup() {
 void loop() {
   if(Serial.available()){
     char val = Serial.read();
-    // Serial.print(val) ; 
+    Serial.print(val) ; 
     if(val != -1)
     {
       switch(val)
