@@ -12,7 +12,8 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "c:/Users/Lorenzo Jacqueroud/git/Robottle-low-level/AX-12A-servo-library-base/.pio/build/megaatmega1280/firmware.elf",
+            "executable": "c:/Users/Lorenzo Jacqueroud/git/Robottle-low-level/dynamixel v0/.pio/build/megaatmega1280/firmware.elf",
+            "projectEnvName": "megaatmega1280",
             "toolchainBinDir": "C:/Users/Lorenzo Jacqueroud/.platformio/packages/toolchain-atmelavr/bin",
             "preLaunchTask": {
                 "type": "PlatformIO",
@@ -24,7 +25,8 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "c:/Users/Lorenzo Jacqueroud/git/Robottle-low-level/AX-12A-servo-library-base/.pio/build/megaatmega1280/firmware.elf",
+            "executable": "c:/Users/Lorenzo Jacqueroud/git/Robottle-low-level/dynamixel v0/.pio/build/megaatmega1280/firmware.elf",
+            "projectEnvName": "megaatmega1280",
             "toolchainBinDir": "C:/Users/Lorenzo Jacqueroud/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart"
         }

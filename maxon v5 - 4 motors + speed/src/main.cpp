@@ -17,6 +17,8 @@ int speed = 70;  //speed in pmw 10%-90% of 0-255
 int speedTurn = 80;
 
 float readSpeed;
+float speedLeft;
+float speedRight;
 int commFreq;
 
 
@@ -81,17 +83,13 @@ void loop() {
         break;
       // case 'r':
       //   readSpeed = (int)readSpeedL();
-      //   if(readSpeed!=1) {
-      //     SERIAL.print("speed left:");
-      //     SERIAL.println(readSpeed);
-      //   }
+      //   SERIAL.print("speed left:");
+      //   SERIAL.println(readSpeed);
       //   break;
       // case 't':
       //   readSpeed = (int)readSpeedR();
-      //   if(readSpeed!=1) {
-      //     SERIAL.print("speed right:");
-      //     SERIAL.println(readSpeed);
-      //   }
+      //   SERIAL.print("speed right:");
+      //   SERIAL.println(readSpeed);
       //   break;
       case 'z':
         Serial.print("test hello");
@@ -101,20 +99,16 @@ void loop() {
     else stop();
   }
 
-  // moveForward (speed,speed);
-  // delay(2000);
-  // moveBackward(speed, speed);
-  // delay(2000);
-  // moveLeft(speed,speed);
-  // delay(2000);
-  // moveRight(speed, speed);
-  // delay(2000);
-
-  // readSpeed = readSpeedL();
-  // SERIAL.print("read speed LEFT:");
-  // SERIAL.println(readSpeed);
-  // readSpeed = readSpeedR();
-  // SERIAL.print("read speed RIGHT:");
-  // SERIAL.println(readSpeed);
-  // delay(200);
+  speedLeft = readSpeedL();
+  // SERIAL.print("l");
+  // SERIAL.println(speedLeft);
+  Serial.print("l");
+  Serial.println(speedLeft);
+  
+  speedRight = readSpeedR();
+  // SERIAL.print("r");
+  // SERIAL.println(speedRight);
+  Serial.print("r");
+  Serial.println(speedRight);
+  
 }

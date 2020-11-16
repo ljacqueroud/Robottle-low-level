@@ -6,8 +6,8 @@
         {
             "name": "Win32",
             "includePath": [
-                "c:/Users/Lorenzo Jacqueroud/git/Robottle-low-level/AX-12A-servo-library/include",
-                "c:/Users/Lorenzo Jacqueroud/git/Robottle-low-level/AX-12A-servo-library/src",
+                "c:/Users/Lorenzo Jacqueroud/git/Robottle-low-level/dynamixel v1 - moveto/include",
+                "c:/Users/Lorenzo Jacqueroud/git/Robottle-low-level/dynamixel v1 - moveto/src",
                 "C:/Users/Lorenzo Jacqueroud/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "C:/Users/Lorenzo Jacqueroud/.platformio/packages/framework-arduino-avr/variants/mega",
                 "C:/Users/Lorenzo Jacqueroud/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
@@ -21,8 +21,8 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "c:/Users/Lorenzo Jacqueroud/git/Robottle-low-level/AX-12A-servo-library/include",
-                    "c:/Users/Lorenzo Jacqueroud/git/Robottle-low-level/AX-12A-servo-library/src",
+                    "c:/Users/Lorenzo Jacqueroud/git/Robottle-low-level/dynamixel v1 - moveto/include",
+                    "c:/Users/Lorenzo Jacqueroud/git/Robottle-low-level/dynamixel v1 - moveto/src",
                     "C:/Users/Lorenzo Jacqueroud/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "C:/Users/Lorenzo Jacqueroud/.platformio/packages/framework-arduino-avr/variants/mega",
                     "C:/Users/Lorenzo Jacqueroud/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
@@ -35,20 +35,20 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=50002",
-                "ARDUINO_AVR_MEGA2560",
+                "PLATFORMIO=50003",
+                "ARDUINO_AVR_MEGA",
                 "F_CPU=16000000L",
                 "ARDUINO_ARCH_AVR",
                 "ARDUINO=10808",
-                "__AVR_ATmega2560__",
+                "__AVR_ATmega1280__",
                 ""
             ],
-            "intelliSenseMode": "clang-x64",
+            "intelliSenseMode": "gcc-x64",
             "cStandard": "c11",
             "cppStandard": "c++11",
             "compilerPath": "C:/Users/Lorenzo Jacqueroud/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
             "compilerArgs": [
-                "-mmcu=atmega2560",
+                "-mmcu=atmega1280",
                 ""
             ]
         }

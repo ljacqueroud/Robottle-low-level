@@ -3,15 +3,17 @@
  */
 
 #include "Arduino.h"
-#include "AX12A.h"
+// #include "AX12A.h"
 
 //#include <iostream>
 // using namespace std;
 
-#define DirectionPin 	(1u)
-#define BaudRate  		(1000000ul)
-#define ID 						(2u)
+// #define DirectionPin 	(1u)
+// #define BaudRate  		(1000000ul)
+// #define ID 				(2u)
 
+////////////////////////////////////////////TO DO //////////////////////////////////
+// try creating a new project -> problem: cannot find include file
 
 /*
 void setup()
@@ -35,27 +37,38 @@ void loop()
 }
 */
 
+// int temp;
 
 
-/*
 // LED blinking
 void setup()
 {
-	ax12a.begin(BaudRate, DirectionPin, &Serial1);
+	Serial.begin(9600);
+  	Serial.println("Robottle ready to take off");
+  	Serial.println("Waiting for command");
+	// ax12a.begin(BaudRate, DirectionPin, &Serial1);
+	// // reset ID of the thing for literaly every possible adress
+	// for (int i = 0; i <= 255; i++) {
+	//   ax12a.setID(i, ID);
+	//   delay(10);
+	// }
 }
 
 void loop()
 {
-	ax12a.ledStatus(ID, ON);
-	delay(1000);
-	ax12a.ledStatus(ID, OFF);
-	delay(1000);
+	// temp = ax12a.readTemperature(ID);
+	Serial.println("\ninitial pos:");
+  	// Serial.println(temp);
+	// ax12a.ledStatus(ID, ON);
+	// delay(1000);
+	// ax12a.ledStatus(ID, OFF);
+	// delay(1000);
 }
-*/
 
 
 
 
+/*
 // ENDLESS turn
 void setup()
 {
@@ -73,7 +86,7 @@ void loop()
 {
 
 }
-
+*/
 
 
 

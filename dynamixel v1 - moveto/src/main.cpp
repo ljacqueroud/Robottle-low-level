@@ -8,18 +8,69 @@
 #include "WProgram.h"
 #endif
 
-#include "../lib/AX12A.h"
-#include "../lib/servo.h"
+#include "AX12A.h"
+#include "servo.h"
 
 //#include <iostream>
 // using namespace std;
 
 #define DirectionPin 	(1u)
-#define BaudRate  		(200000ul)
+#define BaudRate  		(1000000ul)
 #define ID 						(2u)
 
 
+
 /*
+//pos: 0=min, 1023=max for range of 300° (10°=34.1)
+int posRest = 580;        //-20°
+int posGrab = 205;         //90°
+
+//speed: 1=min, 1023=max
+int movSpeed = 150;
+
+int currentPos = 512;
+
+void setup()
+{
+  Serial.begin(9600);
+	ax12a.begin(1000000, DirectionPin, &Serial1);    //begin com
+  // ax12a.setBD(ID, BaudRate);                       //set new baud rate
+  // ax12a.end();                                     //end com
+  // ax12a.begin(BaudRate, DirectionPin, &Serial1);   //begin com with new br
+  // TO TEST ABOVE ^^^^^^
+  
+  ax12a.writeRegister2(ID, AX_GOAL_SPEED_L, movSpeed);    //set speed
+
+  // currentPos = ax12a.readRegister(ID, AX_PRESENT_POSITION_L, 2);  //read initial pos
+  // Serial.print("\ninitial pos:");
+  // Serial.println(currentPos);
+
+  // moveto(ID, posRest);        //move to rest position
+  // delay(500);
+}
+
+void loop()
+{
+//   moveto(ID, posGrab);
+//   currentPos = ax12a.readRegister(ID, AX_PRESENT_VOLTAGE, 1);
+//   Serial.print("servo arrived at pos grab:");
+//   Serial.println(currentPos);
+//   delay(500);
+
+//   moveto(ID, posRest);
+//   currentPos = ax12a.readRegister(ID, AX_PRESENT_VOLTAGE, 1);
+//   Serial.print("servo arrived at pos rest:");
+//   Serial.println(currentPos);
+//   delay(500);
+
+  currentPos = ax12a.readRegister(ID, AX_PRESENT_POSITION_L, 2);  //read initial pos
+  Serial.print("\ninitial pos:");
+  Serial.println(currentPos);
+}
+/**/
+
+
+// /*
 void setup()
 {
   pinMode(0, INPUT) ;
@@ -39,7 +90,7 @@ void loop()
 	ax12a.ledStatus(ID, OFF);
 	delay(1000);
 }
-*/
+/**/
 
 
 
@@ -189,46 +240,3 @@ void loop()
 
 
 
-
-//pos: 0=min, 1023=max for range of 300° (10°=34.1)
-int posRest = 580;        //-20°
-int posGrab = 205;         //90°
-
-//speed: 1=min, 1023=max
-int movSpeed = 150;
-
-int currentPos = 512;
-
-void setup()
-{
-  Serial.begin(9600);
-	ax12a.begin(1000000, DirectionPin, &Serial1);    //begin com
-  ax12a.setBD(ID, BaudRate);                       //set new baud rate
-  ax12a.end();                                     //end com
-  ax12a.begin(BaudRate, DirectionPin, &Serial1);   //begin com with new br
-  // TO TEST ABOVE ^^^^^^
-  
-  ax12a.writeRegister2(ID, AX_GOAL_SPEED_L, movSpeed);    //set speed
-
-  currentPos = ax12a.readRegister(ID, AX_PRESENT_POSITION_L, 2);  //read initial pos
-  Serial.print("\ninitial pos:");
-  Serial.println(currentPos);
-
-  moveto(ID, posRest);        //move to rest position
-  delay(500);
-}
-
-void loop()
-{
-  moveto(ID, posGrab);
-  currentPos = ax12a.readRegister(ID, AX_PRESENT_VOLTAGE, 1);
-  Serial.print("servo arrived at pos grab:");
-  Serial.println(currentPos);
-  delay(500);
-
-  moveto(ID, posRest);
-  currentPos = ax12a.readRegister(ID, AX_PRESENT_VOLTAGE, 1);
-  Serial.print("servo arrived at pos rest:");
-  Serial.println(currentPos);
-  delay(500);
-}

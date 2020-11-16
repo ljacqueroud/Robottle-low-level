@@ -1,5 +1,5 @@
-#include "../lib/servo.h"
-#include "../lib/AX12A.h"
+#include "servo.h"
+#include "AX12A.h"
 
 
 void moveto(int id, int target)
