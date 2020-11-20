@@ -15,12 +15,12 @@
 // using namespace std;
 
 #define DirectionPin 	(1u)
-#define BaudRate  		(1000000ul)
+#define BaudRate  		(200000ul)
 #define ID 						(2u)
 
 
 
-/*
+// /*
 //pos: 0=min, 1023=max for range of 300° (10°=34.1)
 int posRest = 580;        //-20°
 int posGrab = 205;         //90°
@@ -30,16 +30,17 @@ int movSpeed = 150;
 
 int currentPos = 512;
 
+int reg;
+
+
 void setup()
 {
   Serial.begin(9600);
-	ax12a.begin(1000000, DirectionPin, &Serial1);    //begin com
-  // ax12a.setBD(ID, BaudRate);                       //set new baud rate
-  // ax12a.end();                                     //end com
-  // ax12a.begin(BaudRate, DirectionPin, &Serial1);   //begin com with new br
-  // TO TEST ABOVE ^^^^^^
-  
-  ax12a.writeRegister2(ID, AX_GOAL_SPEED_L, movSpeed);    //set speed
+	ax12a.begin(BaudRate, DirectionPin, &Serial1);      //begin com, ATTENTION: make sure servo has correct ID and baudrate
+  ax12a.writeRegister(ID, AX_CCW_ANGLE_LIMIT_L, 0xff);
+
+
+  // ax12a.writeRegister2(ID, AX_GOAL_SPEED_L, movSpeed);    //set speed
 
   // currentPos = ax12a.readRegister(ID, AX_PRESENT_POSITION_L, 2);  //read initial pos
   // Serial.print("\ninitial pos:");
@@ -63,24 +64,32 @@ void loop()
 //   Serial.println(currentPos);
 //   delay(500);
 
-  currentPos = ax12a.readRegister(ID, AX_PRESENT_POSITION_L, 2);  //read initial pos
-  Serial.print("\ninitial pos:");
-  Serial.println(currentPos);
+  // currentPos = ax12a.readTemperature(ID);
+  // currentPos = ax12a.readRegister(ID, AX_PRESENT_POSITION_L, 2);  //read initial pos
+  // Serial.print("current pos:");
+  // Serial.println(currentPos);
+
+  // ax12a.ledStatus(ID, ON);
+  // delay(500);
+  // ax12a.ledStatus(ID,OFF);
+  // delay(500);
+
+
+  reg = ax12a.readRegister(ID, AX_CCW_ANGLE_LIMIT_L, 1);
+	Serial.println(reg);
+	delay(1000);
 }
 /**/
 
 
-// /*
+/*
 void setup()
 {
-  pinMode(0, INPUT) ;
-  pinMode(1, OUTPUT) ;
+  // reset baudrate of servo ID to defined value
+  // resetBD(ID, BaudRate, DirectionPin, &Serial1);
+
 	ax12a.begin(BaudRate, DirectionPin, &Serial1);
-  // reset ID of the thing for literaly every possible adress
-  // for (int i = 0; i <= 255; i++) {
-  //   ax12a.setID(i, ID) ;
-  //   delay(10);
-  // }
+
 }
 
 void loop()
@@ -98,7 +107,12 @@ void loop()
 // LED BLINK
 void setup()
 {
-	ax12a.begin(BaudRate, DirectionPin, &Serial1);
+  // TO CHANGE BAUDRATE FROM OLD VALUE (1000000) TO NEW VALUE (BaudRate)
+	// ax12a.begin(1000000, DirectionPin, &Serial1);
+  // ax12a.setBD(ID, BaudRate);
+  // ax12a.end();
+  ax12a.begin(BaudRate, DirectionPin, &Serial1);
+
   // //reset ID of the thing for literaly every possible adress
   // for (int i = 0; i <= 255; i++) {
   //   ax12a.setID(i, ID) ;
@@ -113,7 +127,7 @@ void loop()
 	ax12a.ledStatus(ID, OFF);
 	delay(1000);
 }
-*/
+/**/
 
 
 

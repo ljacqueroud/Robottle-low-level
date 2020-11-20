@@ -8,7 +8,7 @@
 #endif
 
 
-#define SERIAL    Serial
+#define SERIAL    Serial2
 
 // PINS FOR CONTROL
 //FRONT MOTORS: 1 for LEFT, 2 for RIGHT
@@ -20,20 +20,22 @@
 #define DIR_PIN2        49
 
 //BACKMOTORS: 3 for LEFT, 4 for RIGHT
-#define PWM_PIN3        3
-#define PWM_PIN4        2
-#define EN_PIN3         A5
-#define EN_PIN4         A7
-#define DIR_PIN3        A4
-#define DIR_PIN4        A6
+#define PWM_PIN3        11
+#define PWM_PIN4        7
+#define EN_PIN3         10
+#define EN_PIN4         6
+#define DIR_PIN3        8
+#define DIR_PIN4        5
 
 // PINS FOR OUTPUT
-#define DIGITAL_OUT1    7
-#define DIGITAL_OUT2    11
-#define SPEED_OUT1      6
-#define SPEED_OUT2      10
-#define SPEEDAVG_OUT1   5
-#define SPEEDAVG_OUT2   9
+#define DIGITAL_OUT1    A4
+#define DIGITAL_OUT2    A0
+#define SPEED_OUT1      A5
+#define SPEED_OUT2      A1
+#define SPEEDAVG_OUT1   A6
+#define SPEEDAVG_OUT2   A2
+
+// ////////////////////////////// ATTENTION: DONT CONNECT TO PIN 9 ///////////////////////////////
 
 
 // constants

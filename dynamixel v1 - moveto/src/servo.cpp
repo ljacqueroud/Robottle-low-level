@@ -47,3 +47,20 @@ void moveto(int id, int target)
     // }
   }
 }
+
+
+void resetBD(unsigned char ID, long bd, unsigned char DirectionPin, HardwareSerial *srl) {
+  // ATTENTION: THIS WILL ALSO RESET THE IDS OF EVERY CONNECTED SERVO
+	// reset all 
+  for (int b=1; b<0xFF; b++){                       // This "for" loop will take about 20 Sec to compelet and is used to loop though all speeds that Dynamixel can be and send reset instuction 
+		long Baudrate_BPS = 0;
+		Baudrate_BPS  = 2000000 / (b + 1);              // Calculate Baudrate as ber "Robotis e-manual"
+		ax12a.begin(Baudrate_BPS, DirectionPin, srl);   // Begin communication   
+		ax12a.reset(0xFE);                                // Broadcast to Dynamixel ID and Reset Dynamixel to factory default
+		delay(5);     
+ 	}
+
+  ax12a.begin(1000000, DirectionPin, srl);
+  ax12a.setBD(0xFE, bd);
+  ax12a.end();
+}

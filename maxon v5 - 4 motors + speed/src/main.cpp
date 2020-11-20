@@ -13,15 +13,13 @@
 //3: direction on pin 49,48
 
 
-int speed = 70;  //speed in pmw 10%-90% of 0-255
+int speed = 130;  //speed in pmw 10%-90% of 0-255
 int speedTurn = 80;
 
 float readSpeed;
 float speedLeft;
 float speedRight;
 int commFreq;
-
-
 
 void setup() {
   // sets the pin as output
@@ -40,10 +38,17 @@ void setup() {
   pinMode(DIR_PIN3, OUTPUT);
   pinMode(DIR_PIN4, OUTPUT);
 
-  // SERIAL.begin(9600); // opens serial port, sets data rate to 9600 bps
-  Serial.begin(9600);
-  Serial.println("Robottle ready to take off");
-  Serial.println("Waiting for command");
+  pinMode(DIGITAL_OUT1, INPUT);
+  pinMode(DIGITAL_OUT2, INPUT);
+  pinMode(SPEED_OUT1, INPUT);
+  pinMode(SPEED_OUT2, INPUT);
+  pinMode(SPEEDAVG_OUT1, INPUT);
+  pinMode(SPEEDAVG_OUT2, INPUT);
+
+  SERIAL.begin(9600); // opens serial port, sets data rate to 9600 bps
+  // Serial.begin(9600);
+  // Serial.println("Robottle ready to take off");
+  // Serial.println("Waiting for command");
 
 
   // default pin setup
@@ -59,9 +64,9 @@ void setup() {
 }
 
 void loop() {
-  if(Serial.available()){
-    char val = Serial.read();
-    Serial.print(val) ; 
+  if(SERIAL.available()){
+    char val = SERIAL.read();
+    // Serial.print(val) ; 
     if(val != -1)
     {
       switch(val)
@@ -91,24 +96,26 @@ void loop() {
       //   SERIAL.print("speed right:");
       //   SERIAL.println(readSpeed);
       //   break;
-      case 'z':
-        Serial.print("test hello");
-        Serial.println(123);
+      // case 'z':
+      //   Serial.print("test hello");
+      //   Serial.println(123);
       }
     }
     else stop();
   }
 
   speedLeft = readSpeedL();
-  // SERIAL.print("l");
-  // SERIAL.println(speedLeft);
-  Serial.print("l");
-  Serial.println(speedLeft);
+  SERIAL.print("l");
+  SERIAL.println(speedLeft);
+  // Serial.print("l");
+  // Serial.println(speedLeft);
   
   speedRight = readSpeedR();
-  // SERIAL.print("r");
-  // SERIAL.println(speedRight);
-  Serial.print("r");
-  Serial.println(speedRight);
+  SERIAL.print("r");
+  SERIAL.println(speedRight);
+  // Serial.print("r");
+  // Serial.println(speedRight);
+
+  delay(50);
   
 }
