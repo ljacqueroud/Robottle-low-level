@@ -36,11 +36,38 @@ int reg;
 void setup()
 {
   Serial.begin(9600);
-	ax12a.begin(BaudRate, DirectionPin, &Serial1);      //begin com, ATTENTION: make sure servo has correct ID and baudrate
-  ax12a.writeRegister(ID, AX_CCW_ANGLE_LIMIT_L, 0xff);
+
+  // RESET ALL IDS
+	// for (int i = 0; i <= 255; i++) {
+	//   ax12a.setID(i, ID);
+	//   delay(10);
+	// }
+  
+  // RESET FOR ALL BAUDRATES AND ALL IDS
+	// for (int b=1; b<0xFF; b++){                                  // This "for" loop will take about 20 Sec to compelet and is used to loop though all speeds that Dynamixel can be and send reset instuction 
+	// 	long Baudrate_BPS = 0;
+	// 	Baudrate_BPS  = 2000000 / (b + 1);                        // Calculate Baudrate as ber "Robotis e-manual"
+	// 	ax12a.begin(Baudrate_BPS, DirectionPin, &Serial1);   // Set Ardiuno Serial speed and control pin      
+	// 	ax12a.reset(0xFE);                                // Broadcast to all Dynamixel IDs(0xFE is the ID for all Dynamixel to responed) and Reset Dynamixel to factory default
+	// 	delay(5);     
+ 	// }
+
+  // SET BAUDRATE TO A VALUE BY CHECKING EVERY BAUDRATE
+	for (int b=1; b<0xFF; b++){                                  // This "for" loop will take about 20 Sec to compelet and is used to loop though all speeds that Dynamixel can be and send reset instuction 
+		long Baudrate_BPS = 0;
+		Baudrate_BPS  = 2000000 / (b + 1);                         // Calculate Baudrate as ber "Robotis e-manual"
+		ax12a.begin(Baudrate_BPS, DirectionPin, &Serial1);         // Set Ardiuno Serial speed and control pin      
+		ax12a.setBD(0xFE,BaudRate);                                // Broadcast to all Dynamixel IDs(0xFE is the ID for all Dynamixel to responed) and Reset Dynamixel to factory default
+		delay(5);     
+ 	}
+	ax12a.begin(BaudRate, DirectionPin, &Serial1);               //begin com, ATTENTION: make sure servo has correct ID and baudrate
 
 
-  // ax12a.writeRegister2(ID, AX_GOAL_SPEED_L, movSpeed);    //set speed
+
+  // ax12a.writeRegister(ID, AX_CCW_ANGLE_LIMIT_L, 0xff);     //set max angle
+
+
+  // ax12a.writeRegister2(ID, AX_GOAL_SPEED_L, movSpeed);     //set speed
 
   // currentPos = ax12a.readRegister(ID, AX_PRESENT_POSITION_L, 2);  //read initial pos
   // Serial.print("\ninitial pos:");
@@ -52,6 +79,7 @@ void setup()
 
 void loop()
 {
+  //move to grab position, then to rest position
 //   moveto(ID, posGrab);
 //   currentPos = ax12a.readRegister(ID, AX_PRESENT_VOLTAGE, 1);
 //   Serial.print("servo arrived at pos grab:");
@@ -64,19 +92,20 @@ void loop()
 //   Serial.println(currentPos);
 //   delay(500);
 
+  // test: read temperature/initial position
   // currentPos = ax12a.readTemperature(ID);
   // currentPos = ax12a.readRegister(ID, AX_PRESENT_POSITION_L, 2);  //read initial pos
   // Serial.print("current pos:");
   // Serial.println(currentPos);
 
-  // ax12a.ledStatus(ID, ON);
-  // delay(500);
-  // ax12a.ledStatus(ID,OFF);
-  // delay(500);
 
-
-  reg = ax12a.readRegister(ID, AX_CCW_ANGLE_LIMIT_L, 1);
+  // reg = ax12a.readRegister(ID, AX_CCW_ANGLE_LIMIT_L, 1);
+  reg = ax12a.readRegister(ID, AX_CCW_ANGLE_LIMIT_L, 2);
+  Serial.print("read register:");
 	Serial.println(reg);
+	ax12a.ledStatus(ID, ON);
+	delay(1000);
+	ax12a.ledStatus(ID, OFF);
 	delay(1000);
 }
 /**/

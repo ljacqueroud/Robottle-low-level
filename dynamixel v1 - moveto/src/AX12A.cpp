@@ -993,36 +993,37 @@ int AX12A::readRegister(unsigned char ID, unsigned char reg, unsigned char reg_l
 		Time_Counter++;
 		delayus(1000);
 	}
-
+	Serial.print("available data:");
+	Serial.println(availableData());
 	while (availableData() > 0)
 	{
 		Incoming_Byte = readData();
 		if ( (Incoming_Byte == 255) & (peekData() == 255) )
 		{
-			//check = 0;
+			check = 0;
 			readData();                            // Start Bytes
-			//check += readData();                           // Ax-12 ID
-			//check += readData();                            // Length
+			check += readData();                           // Ax-12 ID
+			check += readData();                            // Length
 			if( (Error_Byte = readData()) != 0 ) {   // Error
-				//Serial.print("Error found:");
-				//Serial.println(Error_Byte);
+				Serial.print("Error found:");
+				Serial.println(Error_Byte);
 				return (Error_Byte*(-1));
 			}
-			//Serial.print("no error, Register:");
+			Serial.print("no error, Register:");
 			switch (reg_len)
 			{
 				case 1:
 					returned_Byte = readData();
-					//check += returned_Byte;
-					//Serial.println(((~check)&0xFF)-readData());
+					check += returned_Byte;
+					Serial.println(((~check)&0xFF)-readData());
 					return returned_Byte;
 					break;
 				case 2:
 					returned_Byte = readData();
-					//check += returned_Byte;
+					check += returned_Byte;
 					returned_Byte += readData() << 8;
-					//check += (returned_Byte>>8);
-					//Serial.println(((~check)&0xFF)-readData());
+					check += (returned_Byte>>8);
+					Serial.println(((~check)&0xFF)-readData());
 					return returned_Byte;
 				break;
 			}
