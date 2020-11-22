@@ -92,13 +92,8 @@ void moveRight(int speedL,int speedR) {
 void stop() {
   analogWrite(PWM_PIN1, PMW_LOW_SPEED);
   analogWrite(PWM_PIN2, PMW_LOW_SPEED);
-
-  // if going forward/backward: slow down back motors aswell
-  if(abs(readSpeedL()-readSpeedR()) > SPEED_COMPARE) {
-    analogWrite(PWM_PIN3, PMW_LOW_SPEED);
-    analogWrite(PWM_PIN4, PMW_LOW_SPEED);
-  }
-  
+  analogWrite(PWM_PIN3, PMW_LOW_SPEED);
+  analogWrite(PWM_PIN4, PMW_LOW_SPEED);
 
   //wait until it slows down to almost zero speed or if there is another command
   while(!SERIAL.available() && (abs(readSpeedL()) >= ZERO_SPEED && abs(readSpeedR()) >= ZERO_SPEED)) {
