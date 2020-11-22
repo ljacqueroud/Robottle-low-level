@@ -36,7 +36,7 @@ int AX12A::read_error(void)
 			readData();                                    // Ax-12 ID
 			readData();                                    // Length
 			Error_Byte = readData();                       // Error
-				return (Error_Byte);
+			return (Error_Byte);
 		}
 	}
 	return (-1);											 // No Ax Response
@@ -946,11 +946,7 @@ int AX12A::sendAXPacket(unsigned char * packet, unsigned int length)
 	switchCom(Direction_Pin, TX_MODE); 	// Switch to Transmission  Mode
 
 	sendData(packet, length);			// Send data through sending buffer
-	// delay(100);
-	// while(availableData()>0) {
-	// 	Serial.print("read data:");
-	// 	Serial.println(readData());
-	// }
+	
 	flush(); 							// Wait until buffer is empty
 
 	switchCom(Direction_Pin, RX_MODE); 	// Switch back to Reception Mode

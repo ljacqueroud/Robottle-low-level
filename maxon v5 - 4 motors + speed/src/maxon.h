@@ -28,12 +28,12 @@
 #define DIR_PIN4        5
 
 // PINS FOR OUTPUT
-#define DIGITAL_OUT1    A4
-#define DIGITAL_OUT2    A0
-#define SPEED_OUT1      A5
-#define SPEED_OUT2      A1
-#define SPEEDAVG_OUT1   A6
-#define SPEEDAVG_OUT2   A2
+#define DIGITAL_OUT1    A0
+#define DIGITAL_OUT2    A4
+#define SPEED_OUT1      A1
+#define SPEED_OUT2      A5
+#define SPEEDAVG_OUT1   A2
+#define SPEEDAVG_OUT2   A6
 
 // ////////////////////////////// ATTENTION: DONT CONNECT TO PIN 9 ///////////////////////////////
 

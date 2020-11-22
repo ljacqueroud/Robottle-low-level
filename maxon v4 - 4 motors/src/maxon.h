@@ -20,12 +20,22 @@
 #define DIR_PIN2        49
 
 //BACKMOTORS: 3 for LEFT, 4 for RIGHT
-#define PWM_PIN3        3
-#define PWM_PIN4        2
-#define EN_PIN3         A5
-#define EN_PIN4         A7
-#define DIR_PIN3        A4
-#define DIR_PIN4        A6
+#define PWM_PIN3        11
+#define PWM_PIN4        7
+#define EN_PIN3         10
+#define EN_PIN4         6
+#define DIR_PIN3        8
+#define DIR_PIN4        5
+
+// PINS FOR OUTPUT
+#define DIGITAL_OUT1    A0
+#define DIGITAL_OUT2    A4
+#define SPEED_OUT1      A1
+#define SPEED_OUT2      A5
+#define SPEEDAVG_OUT1   A2
+#define SPEEDAVG_OUT2   A6
+
+// ////////////////////////////// ATTENTION: DONT CONNECT TO PIN 9 ///////////////////////////////
 
 
 // constants
@@ -45,10 +55,10 @@ void moveLeft(int speedL,int speedR);
 void moveRight(int speedL,int speedR);
 void stop();
 
-// //READ SPEED
-// float readSpeedL();
-// float readSpeedR();
-// float convertVoltToSpeed(float v);
+//READ SPEED
+float readSpeedL();
+float readSpeedR();
+float convertVoltToSpeed(float v);
 
 
 

@@ -39,13 +39,13 @@ void loop()
 
 
 
-/*
+
 // ENDLESS turn
 void setup()
 {
 	ax12a.begin(BaudRate, DirectionPin, &Serial1);
 	ax12a.setEndless(ID, ON);
-	ax12a.turn(ID, RIGHT, 500);
+	ax12a.turn(ID, LEFT, 200);
 }
 
 void loop()
@@ -56,7 +56,7 @@ void loop()
 
 
 
-
+/*
 // Read register
 int reg = 0;
 // pos from 0 to 0x3ff(300°)
@@ -77,7 +77,23 @@ void loop()
 /**/
 
 
+/*
+// Ping
+int reg;
 
+void setup()
+{
+  	Serial.begin(9600);
+	ax12a.begin(BaudRate, DirectionPin, &Serial1);
+}
+
+void loop()
+{
+	reg = ax12a.ping(ID);
+	Serial.println(reg);
+	delay(500);
+}
+/**/
 
 
 

@@ -13,7 +13,7 @@
 //3: direction on pin 49,48
 
 
-int speed = 70;  //speed in pmw 10%-90% of 0-255
+int speed = 200;  //speed in pmw 10%-90% of 0-255
 int speedTurn = 80;
 
 float readSpeed;

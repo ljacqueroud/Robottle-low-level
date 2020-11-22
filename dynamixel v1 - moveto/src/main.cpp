@@ -42,18 +42,18 @@ void setup()
 	//   ax12a.setID(i, ID);
 	//   delay(10);
 	// }
-  
+
   // RESET FOR ALL BAUDRATES AND ALL IDS
 	// for (int b=1; b<0xFF; b++){                                  // This "for" loop will take about 20 Sec to compelet and is used to loop though all speeds that Dynamixel can be and send reset instuction 
 	// 	long Baudrate_BPS = 0;
 	// 	Baudrate_BPS  = 2000000 / (b + 1);                        // Calculate Baudrate as ber "Robotis e-manual"
-	// 	ax12a.begin(Baudrate_BPS, DirectionPin, &Serial1);   // Set Ardiuno Serial speed and control pin      
+	// 	ax12a.begin(Baudrate_BPS, DirectionPin, &Serial1);        // Set Ardiuno Serial speed and control pin      
 	// 	ax12a.reset(0xFE);                                // Broadcast to all Dynamixel IDs(0xFE is the ID for all Dynamixel to responed) and Reset Dynamixel to factory default
 	// 	delay(5);     
  	// }
 
   // SET BAUDRATE TO A VALUE BY CHECKING EVERY BAUDRATE
-	for (int b=1; b<0xFF; b++){                                  // This "for" loop will take about 20 Sec to compelet and is used to loop though all speeds that Dynamixel can be and send reset instuction 
+	for (int b=1; b<0xFF; b++){                                  // This "for" loop will take about 20 Sec to complete and is used to loop though all speeds that Dynamixel can be and send reset instuction 
 		long Baudrate_BPS = 0;
 		Baudrate_BPS  = 2000000 / (b + 1);                         // Calculate Baudrate as ber "Robotis e-manual"
 		ax12a.begin(Baudrate_BPS, DirectionPin, &Serial1);         // Set Ardiuno Serial speed and control pin      
