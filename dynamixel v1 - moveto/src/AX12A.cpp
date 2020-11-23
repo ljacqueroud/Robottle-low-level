@@ -957,7 +957,7 @@ int AX12A::sendAXPacket(unsigned char * packet, unsigned int length)
 void AX12A::sendAXPacketNoError(unsigned char * packet, unsigned int length)
 {
 	switchCom(Direction_Pin, TX_MODE); 	// Switch to Transmission  Mode
-
+	
 	sendData(packet, length);			// Send data through sending buffer
 	flush(); 							// Wait until buffer is empty
 
@@ -991,27 +991,37 @@ int AX12A::readRegister(unsigned char ID, unsigned char reg, unsigned char reg_l
 	}
 	Serial.print("available data:");
 	Serial.println(availableData());
+
+	//while (availableData() > 0) {
+	//	Serial.println(readData());
+	// }
+
 	while (availableData() > 0)
 	{
 		Incoming_Byte = readData();
 		if ( (Incoming_Byte == 255) & (peekData() == 255) )
 		{
+			// Serial.print("remaining available data:");
+			// Serial.println(availableData());
 			check = 0;
+			// while (availableData() > 0) {
+			// 	Serial.println(readData());
+			// }
 			readData();                            // Start Bytes
 			check += readData();                           // Ax-12 ID
 			check += readData();                            // Length
 			if( (Error_Byte = readData()) != 0 ) {   // Error
-				Serial.print("Error found:");
-				Serial.println(Error_Byte);
-				return (Error_Byte*(-1));
+				// Serial.print("Error found:");
+				// Serial.println(Error_Byte);
+				return (Error_Byte);
 			}
-			Serial.print("no error, Register:");
+			// Serial.println("no error");
 			switch (reg_len)
 			{
 				case 1:
 					returned_Byte = readData();
 					check += returned_Byte;
-					Serial.println(((~check)&0xFF)-readData());
+					// Serial.println(((~check)&0xFF)-readData());
 					return returned_Byte;
 					break;
 				case 2:
@@ -1019,10 +1029,14 @@ int AX12A::readRegister(unsigned char ID, unsigned char reg, unsigned char reg_l
 					check += returned_Byte;
 					returned_Byte += readData() << 8;
 					check += (returned_Byte>>8);
-					Serial.println(((~check)&0xFF)-readData());
+					// Serial.println(((~check)&0xFF)-readData());
 					return returned_Byte;
 				break;
 			}
+			return returned_Byte;
+		}
+		else {
+			Serial.println("Error: data has incorrect format");
 		}
 	}
 	return (returned_Byte);     // Returns the read position*/
