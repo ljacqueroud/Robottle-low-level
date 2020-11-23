@@ -3,7 +3,7 @@
 
 void moveForward(int speedL,int speedR) {
   //if its not going straight, stop first
-  if(abs(readSpeedL()-readSpeedR()) > SPEED_COMPARE) {
+  if(abs(readSpeedL()-readSpeedR()) > SPEED_COMPARE && abs(readSpeedL()) >= ZERO_SPEED) {
     stop();
   }
 
@@ -27,7 +27,7 @@ void moveForward(int speedL,int speedR) {
 
 void moveBackward(int speedL,int speedR) {
   //if its not going straight, stop first
-  if(abs(readSpeedL()-readSpeedR()) > SPEED_COMPARE) {
+  if(abs(readSpeedL()-readSpeedR()) > SPEED_COMPARE && abs(readSpeedL()) >= ZERO_SPEED) {
     stop();
   }
 
@@ -51,7 +51,7 @@ void moveBackward(int speedL,int speedR) {
 
 void moveLeft(int speedL,int speedR) {
   //if its going straight, stop first
-  if(abs(readSpeedL()+readSpeedR()) > SPEED_COMPARE) {
+  if(abs(readSpeedL()+readSpeedR()) > SPEED_COMPARE && abs(readSpeedL()) >= ZERO_SPEED) {
     stop();
   }
 
@@ -71,7 +71,7 @@ void moveLeft(int speedL,int speedR) {
 
 void moveRight(int speedL,int speedR) {
   //if its going straight, stop first
-  if(abs(readSpeedL()+readSpeedR()) > SPEED_COMPARE) {
+  if(abs(readSpeedL()+readSpeedR()) > SPEED_COMPARE && abs(readSpeedL()) >= ZERO_SPEED) {
     stop();
   }
 
@@ -108,13 +108,13 @@ void stop() {
 }
 
 float readSpeedL() {
-  return convertVoltToSpeed(analogRead(SPEEDAVG_OUT1));
+  return convertVoltToSpeed(analogRead(SPEEDAVG_OUT1) - V_ZERO_L);
 }
 
 float readSpeedR() {
-  return -convertVoltToSpeed(analogRead(SPEEDAVG_OUT2));
+  return -convertVoltToSpeed(analogRead(SPEEDAVG_OUT2) - V_ZERO_R);
 }
 
 float convertVoltToSpeed(float v) {
-  return ((v-V_ZERO)*MAX_RPM/MAX_V)/GEAR_RATIO;
+  return (v*MAX_RPM/MAX_V)/GEAR_RATIO;
 }

@@ -13,7 +13,7 @@
 //3: direction on pin 49,48
 
 
-int speed = 200;  //speed in pmw 10%-90% of 0-255
+int speed = 150;  //speed in pmw 10%-90% of 0-255
 int speedTurn = 80;
 
 float readSpeed;
@@ -100,7 +100,15 @@ void loop() {
     }
     else stop();
   }
-
+  else {
+    readSpeed = readSpeedL();
+    Serial.print("read speed LEFT:");
+    Serial.print(readSpeed);
+    readSpeed = readSpeedR();
+    Serial.print("\tread speed RIGHT:");
+    Serial.println(readSpeed);
+    delay(200);
+  }
   // moveForward (speed,speed);
   // delay(2000);
   // moveBackward(speed, speed);
@@ -110,11 +118,5 @@ void loop() {
   // moveRight(speed, speed);
   // delay(2000);
 
-  // readSpeed = readSpeedL();
-  // SERIAL.print("read speed LEFT:");
-  // SERIAL.println(readSpeed);
-  // readSpeed = readSpeedR();
-  // SERIAL.print("read speed RIGHT:");
-  // SERIAL.println(readSpeed);
-  // delay(200);
+  
 }

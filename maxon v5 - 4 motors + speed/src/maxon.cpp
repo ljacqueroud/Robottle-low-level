@@ -108,13 +108,14 @@ void stop() {
 }
 
 float readSpeedL() {
-  return convertVoltToSpeed(analogRead(SPEEDAVG_OUT1));
+  return convertVoltToSpeed(analogRead(SPEEDAVG_OUT1) - V_ZERO_L);
 }
 
 float readSpeedR() {
-  return -convertVoltToSpeed(analogRead(SPEEDAVG_OUT2));
+  return -convertVoltToSpeed(analogRead(SPEEDAVG_OUT2) - V_ZERO_R);
 }
 
 float convertVoltToSpeed(float v) {
-  return ((v-V_ZERO)*MAX_RPM/MAX_V)/GEAR_RATIO;
+  return (v*MAX_RPM/MAX_V)/GEAR_RATIO;
 }
+

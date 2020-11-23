@@ -28,10 +28,10 @@
 #define DIR_PIN4        5
 
 // PINS FOR OUTPUT
-#define DIGITAL_OUT1    A0
-#define DIGITAL_OUT2    A4
-#define SPEED_OUT1      A1
-#define SPEED_OUT2      A5
+#define DIGITAL_OUT1    A0          // currently not used
+#define DIGITAL_OUT2    A4          // currently not used
+#define SPEED_OUT1      A1          // currently not used
+#define SPEED_OUT2      A5          // currently not used
 #define SPEEDAVG_OUT1   A2
 #define SPEEDAVG_OUT2   A6
 
@@ -39,11 +39,13 @@
 
 
 // constants
-#define V_ZERO          414   //analog output for zero speed
+#define V_ZERO_L        409   //analog output for zero speed on left driver
+#define V_ZERO_R        410   //analog output for zero speed on right driver
 #define MAX_RPM         3500  //range for rpm measurement
-#define MAX_V           409   //limit voltage for max speed (409 ~= 4V)
+#define MAX_V           410   //limit voltage for max speed (409 ~= 4V)
 #define GEAR_RATIO      60
 #define PMW_LOW_SPEED   26    //low PMW value for stopping motors
+#define PMW_HIGH_SPEED  229   //high PMW value for maximum speed
 #define ZERO_SPEED      2     //speed low enough for turning off motors
 #define SPEED_COMPARE   4     //speed difference for comparing
 
