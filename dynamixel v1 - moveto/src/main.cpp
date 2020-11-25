@@ -31,6 +31,7 @@ int movSpeed = 150;
 int currentPos = 512;
 
 int reg;
+int errorByte;
 
 
 void setup()
@@ -63,8 +64,11 @@ void setup()
  	// }
 
 	ax12a.begin(BaudRate, DirectionPin, &Serial1);               //begin com, ATTENTION: make sure servo has correct ID and baudrate
+	delay(50);
 
-  	ax12a.writeRegister(ID, AX_CCW_ANGLE_LIMIT_L, 0x22);     //set max angle
+  	errorByte = ax12a.writeRegister2(ID, AX_CCW_ANGLE_LIMIT_L, 0x1010);     //set max angle
+	Serial.print("error byte");
+	Serial.println(errorByte);
 
 
   // ax12a.writeRegister2(ID, AX_GOAL_SPEED_L, movSpeed);     //set speed
@@ -101,12 +105,12 @@ void loop()
 
 	// reg = ax12a.readRegister(ID, AX_CCW_ANGLE_LIMIT_L, 1);
 	reg = ax12a.readRegister(ID, AX_CCW_ANGLE_LIMIT_L, 2);
-	//Serial.print("read register:");
-	//Serial.println(reg);
-	ax12a.ledStatus(ID, ON);
-	delay(1000);
-	ax12a.ledStatus(ID, OFF);
-	delay(1000);
+	Serial.print("read register:");
+	Serial.println(reg);
+	// ax12a.ledStatus(ID, ON);
+	// delay(1000);
+	// ax12a.ledStatus(ID, OFF);
+	delay(100);
 }
 /**/
 

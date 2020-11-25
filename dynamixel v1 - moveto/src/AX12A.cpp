@@ -27,6 +27,10 @@ int AX12A::read_error(void)
 		delayus(1000);
 	}
 
+	// while (availableData() > 0) {
+	// 	Serial.println(readData());
+	// }
+
 	while (availableData() > 0)
 	{
 		Incoming_Byte = readData();
@@ -959,6 +963,7 @@ void AX12A::sendAXPacketNoError(unsigned char * packet, unsigned int length)
 	switchCom(Direction_Pin, TX_MODE); 	// Switch to Transmission  Mode
 	
 	sendData(packet, length);			// Send data through sending buffer
+	delay(0);
 	flush(); 							// Wait until buffer is empty
 
 	switchCom(Direction_Pin, RX_MODE); 	// Switch back to Reception Mode
@@ -974,7 +979,7 @@ int AX12A::readRegister(unsigned char ID, unsigned char reg, unsigned char reg_l
 	packet[0] = AX_START;
 	packet[1] = AX_START;
 	packet[2] = ID;
-	packet[3] = 4;
+	packet[3] = AX_READ_DATA_LENGTH;
 	packet[4] = AX_READ_DATA;
 	packet[5] = reg;
 	packet[6] = reg_len;
@@ -984,16 +989,18 @@ int AX12A::readRegister(unsigned char ID, unsigned char reg, unsigned char reg_l
 
 	returned_Byte = -1;
 	Time_Counter = 0;
-	while((availableData() < 7) & (Time_Counter < TIME_OUT))
+	while((availableData() < 12) & (Time_Counter < TIME_OUT))
 	{
 		Time_Counter++;
 		delayus(1000);
 	}
-	Serial.print("available data:");
-	Serial.println(availableData());
+	
 
-	//while (availableData() > 0) {
-	//	Serial.println(readData());
+	// remove first read data: belongs to sent packet, done in order to remove the '255'
+	Incoming_Byte = readData();
+
+	// while( availableData() > 0) {
+	// 	Serial.println(readData());
 	// }
 
 	while (availableData() > 0)
@@ -1026,8 +1033,10 @@ int AX12A::readRegister(unsigned char ID, unsigned char reg, unsigned char reg_l
 					break;
 				case 2:
 					returned_Byte = readData();
+					Serial.println(returned_Byte);
 					check += returned_Byte;
-					returned_Byte += readData() << 8;
+					// returned_Byte += (readData() << 8);
+					Serial.println((int)readData());
 					check += (returned_Byte>>8);
 					// Serial.println(((~check)&0xFF)-readData());
 					return returned_Byte;
@@ -1035,9 +1044,9 @@ int AX12A::readRegister(unsigned char ID, unsigned char reg, unsigned char reg_l
 			}
 			return returned_Byte;
 		}
-		else {
-			Serial.println("Error: data has incorrect format");
-		}
+		// else {
+		// 	Serial.println("Error: data has incorrect format");
+		// }
 	}
 	return (returned_Byte);     // Returns the read position*/
 }
@@ -1067,9 +1076,14 @@ int AX12A::writeRegister(unsigned char ID, unsigned char reg, int regValue)
 
 int AX12A::writeRegister2(unsigned char ID, unsigned char reg, int regValue)
 {
+	Serial.println(regValue);	
 	char regValue_L, regValue_H;
-	regValue_H = regValue >> 8;           // 16 bits - 2 x 8 bits variables
+	regValue_H = regValue >> 8;           // 16 bits = 2 x 8 bits variables
 	regValue_L = regValue;
+	Serial.print("high: ");
+	Serial.println(regValue_H);
+	Serial.print("low: ");
+	Serial.println(regValue_L);
 
 	const unsigned int length = 9;
 	unsigned char packet[length];

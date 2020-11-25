@@ -86,16 +86,9 @@ void loop() {
       case 'x':
         stop();
         break;
-      // case 'r':
-      //   readSpeed = (int)readSpeedL();
-      //   SERIAL.print("speed left:");
-      //   SERIAL.println(readSpeed);
-      //   break;
-      // case 't':
-      //   readSpeed = (int)readSpeedR();
-      //   SERIAL.print("speed right:");
-      //   SERIAL.println(readSpeed);
-      //   break;
+      case 'r':
+        
+
       // case 'z':
       //   Serial.print("test hello");
       //   Serial.println(123);

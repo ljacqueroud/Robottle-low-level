@@ -103,8 +103,9 @@
 #define AX_LED_LENGTH               4
 #define AX_TORQUE_LENGTH            4
 #define AX_POS_LENGTH               4
-#define AX_WRITE_REG_LENGTH					4
-#define AX_WRITE_REG_LENGTH2				5
+#define AX_READ_DATA_LENGTH			4
+#define AX_WRITE_REG_LENGTH			4
+#define AX_WRITE_REG_LENGTH2		5
 #define AX_GOAL_LENGTH              5
 #define AX_MT_LENGTH                5
 #define AX_PUNCH_LENGTH             5
@@ -143,6 +144,8 @@ private:
 	unsigned char Load_Low_Byte;
 
 	unsigned char check;
+
+	bool check_Read_Data;
 
 	int Moving_Byte;
 	int RWS_Byte;
