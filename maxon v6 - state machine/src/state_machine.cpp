@@ -2,6 +2,7 @@
 #include "maxon.h"
 
 
+char val;
 
 
 int controlMode (int state) {
@@ -13,22 +14,22 @@ int controlMode (int state) {
 
   // reads commands
   if(SERIAL.available()){
-    char val = SERIAL.read();
+    val = SERIAL.read();
     
     if(val != -1)
     {
       switch(val)
       {
-      case 'w'://Move Forward
+      case 'w':     //Move Forward
         moveForward ();
         break;
-      case 's'://Move Backward
+      case 's':     //Move Backward
         moveBackward ();
         break;
-      case 'a'://Turn Left
+      case 'a':     //Turn Left
         moveLeft ();
         break;
-      case 'd'://Turn Right
+      case 'd':     //Turn Right
         moveRight ();
         break;
       case 'x':

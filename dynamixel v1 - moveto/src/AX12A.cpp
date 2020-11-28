@@ -3,7 +3,7 @@
 // Macros /////////////////////////////////////////////////////////////////////
 
 #define sendData(packet, length)  	(varSerial->write(packet, length))    	// Write Over Serial
-#define flush()								(manualFlush())					// Wait until buffer empty
+#define flush()						(varSerial->flush())					// Wait until buffer empty
 #define availableData() 			(varSerial->available())    			// Check Serial Data Available
 #define readData()      			(varSerial->read())         			// Read Serial Data
 #define peekData()      			(varSerial->peek())         			// Peek Serial Data
@@ -26,10 +26,6 @@ int AX12A::read_error(void)
 		Time_Counter++;
 		delayus(1000);
 	}
-
-	// while (availableData() > 0) {
-	// 	Serial.println(readData());
-	// }
 
 	while (availableData() > 0)
 	{
@@ -134,7 +130,7 @@ int AX12A::setBD(unsigned char ID, long baud)
 	return (sendAXPacket(packet, length));
 }
 
-int AX12A::move(unsigned char ID, int Position)
+int AX12A::move(unsigned char ID, int16_t Position)
 {
     char Position_H,Position_L;
     Position_H = Position >> 8;           // 16 bits - 2 x 8 bits variables
@@ -158,7 +154,7 @@ int AX12A::move(unsigned char ID, int Position)
     return (sendAXPacket(packet, length));
 }
 
-int AX12A::moveSpeed(unsigned char ID, int Position, int Speed)
+int AX12A::moveSpeed(unsigned char ID, int16_t Position, int16_t Speed)
 {
     char Position_H,Position_L,Speed_H,Speed_L;
     Position_H = Position >> 8;
@@ -230,7 +226,7 @@ int AX12A::setEndless(unsigned char ID, bool Status)
 	}
 }
 
-int AX12A::turn(unsigned char ID, bool SIDE, int Speed)
+int AX12A::turn(unsigned char ID, bool SIDE, int16_t Speed)
 {
 		if (SIDE == LEFT)
 		{
@@ -281,7 +277,7 @@ int AX12A::turn(unsigned char ID, bool SIDE, int Speed)
 		}
 }
 
-int AX12A::moveRW(unsigned char ID, int Position)
+int AX12A::moveRW(unsigned char ID, int16_t Position)
 {
     char Position_H,Position_L;
     Position_H = Position >> 8;           // 16 bits - 2 x 8 bits variables
@@ -305,7 +301,7 @@ int AX12A::moveRW(unsigned char ID, int Position)
     return (sendAXPacket(packet, length));
 }
 
-int AX12A::moveSpeedRW(unsigned char ID, int Position, int Speed)
+int AX12A::moveSpeedRW(unsigned char ID, int16_t Position, int16_t Speed)
 {
     char Position_H,Position_L,Speed_H,Speed_L;
     Position_H = Position >> 8;
@@ -428,12 +424,12 @@ int AX12A::readTemperature(unsigned char ID)
 	return (Temperature_Byte);               // Returns the read temperature
 }
 
-int AX12A::readPosition(unsigned char ID)
+int16_t AX12A::readPosition(unsigned char ID)
 {
 	const unsigned int length = 8;
 	unsigned char packet[length];
 
-    Checksum = (~(ID + AX_POS_LENGTH + AX_READ_DATA + AX_PRESENT_POSITION_L + AX_BYTE_READ_POS)) & 0xFF;
+  Checksum = (~(ID + AX_POS_LENGTH + AX_READ_DATA + AX_PRESENT_POSITION_L + AX_BYTE_READ_POS)) & 0xFF;
 
 	packet[0] = AX_START;
 	packet[1] = AX_START;
@@ -446,16 +442,16 @@ int AX12A::readPosition(unsigned char ID)
 
 	sendAXPacketNoError(packet, length);
 
-    Position_Long_Byte = -1;
+  Position_Long_Byte = -1;
 	Time_Counter = 0;
-    while((availableData() < 7) & (Time_Counter < TIME_OUT))
-    {
+  while((availableData() < 7) & (Time_Counter < TIME_OUT))
+  {
 		Time_Counter++;
 		delayus(1000);
-    }
+  }
 
-    while (availableData() > 0)
-    {
+  while (availableData() > 0)
+  {
 		Incoming_Byte = readData();
 		if ( (Incoming_Byte == 255) & (peekData() == 255) )
 		{
@@ -467,10 +463,10 @@ int AX12A::readPosition(unsigned char ID)
 
 			Position_Low_Byte = readData();            // Position Bytes
 			Position_High_Byte = readData();
-			Position_Long_Byte = Position_High_Byte << 8;
+			Position_Long_Byte = (Position_High_Byte << 8);
 			Position_Long_Byte = Position_Long_Byte + Position_Low_Byte;
 		}
-    }
+  }
 	return (Position_Long_Byte);     // Returns the read position
 }
 
@@ -516,6 +512,26 @@ int AX12A::readVoltage(unsigned char ID)
 	return (Voltage_Byte);               // Returns the read Voltage
 }
 
+uint16_t AX12A::readTorque(unsigned char ID) {
+  /*
+  reads torque
+  bit 1-9: value
+  bit 10: direction
+  */
+
+  uint16_t tor;
+
+  tor = readRegister(ID, AX_PRESENT_LOAD_L, 2);
+
+  // remove bit 10 (direction bit)
+  if(tor >= 1024) {
+    tor -= 1024;
+  }
+
+  return tor;
+}
+
+
 int AX12A::setTempLimit(unsigned char ID, unsigned char Temperature)
 {
 	const unsigned int length = 8;
@@ -555,7 +571,7 @@ int AX12A::setVoltageLimit(unsigned char ID, unsigned char DVoltage, unsigned ch
 	return (sendAXPacket(packet, length));
 }
 
-int AX12A::setAngleLimit(unsigned char ID, int CWLimit, int CCWLimit)
+int AX12A::setAngleLimit(unsigned char ID, int16_t CWLimit, int16_t CCWLimit)
 {
 	char CW_H,CW_L,CCW_H,CCW_L;
     CW_H = CWLimit >> 8;
@@ -584,7 +600,7 @@ int AX12A::setAngleLimit(unsigned char ID, int CWLimit, int CCWLimit)
 	return (sendAXPacket(packet, length));
 }
 
-int AX12A::setMaxTorque(unsigned char ID, int MaxTorque)
+int AX12A::setMaxTorque(unsigned char ID, int16_t MaxTorque)
 {
     char MaxTorque_H,MaxTorque_L;
     MaxTorque_H = MaxTorque >> 8;           // 16 bits - 2 x 8 bits variables
@@ -726,7 +742,7 @@ int AX12A::setCSlope(unsigned char ID, unsigned char CWCSlope, unsigned char CCW
 	return (sendAXPacket(packet, length));
 }
 
-int AX12A::setPunch(unsigned char ID, int Punch)
+int AX12A::setPunch(unsigned char ID, int16_t Punch)
 {
     char Punch_H,Punch_L;
     Punch_H = Punch >> 8;           // 16 bits - 2 x 8 bits variables
@@ -952,6 +968,7 @@ int AX12A::sendAXPacket(unsigned char * packet, unsigned int length)
 	sendData(packet, length);			// Send data through sending buffer
 	
 	flush(); 							// Wait until buffer is empty
+  manualFlush();
 
 	switchCom(Direction_Pin, RX_MODE); 	// Switch back to Reception Mode
 
@@ -963,13 +980,14 @@ void AX12A::sendAXPacketNoError(unsigned char * packet, unsigned int length)
 	switchCom(Direction_Pin, TX_MODE); 	// Switch to Transmission  Mode
 	
 	sendData(packet, length);			// Send data through sending buffer
-	delay(0);
+	
 	flush(); 							// Wait until buffer is empty
+  manualFlush();
 
 	switchCom(Direction_Pin, RX_MODE); 	// Switch back to Reception Mode
 }
 
-int AX12A::readRegister(unsigned char ID, unsigned char reg, unsigned char reg_len)
+int16_t AX12A::readRegister(unsigned char ID, unsigned char reg, unsigned char reg_len)
 {
 	const unsigned int length = 8;
 	unsigned char packet[length];
@@ -989,37 +1007,22 @@ int AX12A::readRegister(unsigned char ID, unsigned char reg, unsigned char reg_l
 
 	returned_Byte = -1;
 	Time_Counter = 0;
-	while((availableData() < 12) & (Time_Counter < TIME_OUT))
+	while((availableData() < 7) & (Time_Counter < TIME_OUT))
 	{
 		Time_Counter++;
 		delayus(1000);
 	}
-	
-
-	// remove first read data: belongs to sent packet, done in order to remove the '255'
-	Incoming_Byte = readData();
-
-	// while( availableData() > 0) {
-	// 	Serial.println(readData());
-	// }
 
 	while (availableData() > 0)
 	{
 		Incoming_Byte = readData();
 		if ( (Incoming_Byte == 255) & (peekData() == 255) )
 		{
-			// Serial.print("remaining available data:");
-			// Serial.println(availableData());
 			check = 0;
-			// while (availableData() > 0) {
-			// 	Serial.println(readData());
-			// }
 			readData();                            // Start Bytes
 			check += readData();                           // Ax-12 ID
 			check += readData();                            // Length
 			if( (Error_Byte = readData()) != 0 ) {   // Error
-				// Serial.print("Error found:");
-				// Serial.println(Error_Byte);
 				return (Error_Byte);
 			}
 			// Serial.println("no error");
@@ -1033,10 +1036,8 @@ int AX12A::readRegister(unsigned char ID, unsigned char reg, unsigned char reg_l
 					break;
 				case 2:
 					returned_Byte = readData();
-					Serial.println(returned_Byte);
 					check += returned_Byte;
-					// returned_Byte += (readData() << 8);
-					Serial.println((int)readData());
+					returned_Byte += (readData() << 8);
 					check += (returned_Byte>>8);
 					// Serial.println(((~check)&0xFF)-readData());
 					return returned_Byte;
@@ -1051,39 +1052,33 @@ int AX12A::readRegister(unsigned char ID, unsigned char reg, unsigned char reg_l
 	return (returned_Byte);     // Returns the read position*/
 }
 
-int AX12A::writeRegister(unsigned char ID, unsigned char reg, int regValue)
+int AX12A::writeRegister(unsigned char ID, unsigned char reg, uint8_t regValue)
 {
-    char regValue_L;
-    //regValue_H = regValue >> 8;           // 16 bits - 2 x 8 bits variables
-    regValue_L = regValue;
+  char regValue_L;
+  regValue_L = regValue;
 
-    const unsigned int length = 8;
-    unsigned char packet[length];
+  const unsigned int length = 8;
+  unsigned char packet[length];
 
 	Checksum = (~(ID + AX_WRITE_REG_LENGTH + AX_WRITE_DATA + reg + regValue_L)) & 0xFF;
 
-    packet[0] = AX_START;
-    packet[1] = AX_START;
-    packet[2] = ID;
-    packet[3] = AX_WRITE_REG_LENGTH;
-    packet[4] = AX_WRITE_DATA;
-    packet[5] = reg;
-    packet[6] = regValue_L;
-    packet[7] = Checksum;
+  packet[0] = AX_START;
+  packet[1] = AX_START;
+  packet[2] = ID;
+  packet[3] = AX_WRITE_REG_LENGTH;
+  packet[4] = AX_WRITE_DATA;
+  packet[5] = reg;
+  packet[6] = regValue_L;
+  packet[7] = Checksum;
 
-    return (sendAXPacket(packet, length));
+  return (sendAXPacket(packet, length));
 }
 
-int AX12A::writeRegister2(unsigned char ID, unsigned char reg, int regValue)
+int AX12A::writeRegister2(unsigned char ID, unsigned char reg, uint16_t regValue)
 {
-	Serial.println(regValue);	
 	char regValue_L, regValue_H;
 	regValue_H = regValue >> 8;           // 16 bits = 2 x 8 bits variables
 	regValue_L = regValue;
-	Serial.print("high: ");
-	Serial.println(regValue_H);
-	Serial.print("low: ");
-	Serial.println(regValue_L);
 
 	const unsigned int length = 9;
 	unsigned char packet[length];

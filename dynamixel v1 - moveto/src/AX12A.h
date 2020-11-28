@@ -116,7 +116,7 @@
 #define AX_START                    255
 #define AX_CCW_AL_L                 255
 #define AX_CCW_AL_H                 3
-#define TIME_OUT                    10
+#define TIME_OUT                    50
 #define TX_MODE                     1
 #define RX_MODE                     0
 #define LOCK                        1
@@ -151,12 +151,12 @@ private:
 	int RWS_Byte;
 	int Speed_Long_Byte;
 	int Load_Long_Byte;
-	int Position_Long_Byte;
+	int16_t Position_Long_Byte;
 	int Temperature_Byte;
 	int Voltage_Byte;
 	int Error_Byte;
 
-	int returned_Byte;
+	int16_t returned_Byte;
 
 	int read_error(void);
 
@@ -172,26 +172,26 @@ public:
 	int setID(unsigned char ID, unsigned char newID);
 	int setBD(unsigned char ID, long baud);
 
-	int move(unsigned char ID, int Position);
-	int moveSpeed(unsigned char ID, int Position, int Speed);
+	int move(unsigned char ID, int16_t Position);
+	int moveSpeed(unsigned char ID, int16_t Position, int16_t Speed);
 	int setEndless(unsigned char ID,bool Status);
-	int turn(unsigned char ID, bool SIDE, int Speed);
-	int moveRW(unsigned char ID, int Position);
-	int moveSpeedRW(unsigned char ID, int Position, int Speed);
+	int turn(unsigned char ID, bool SIDE, int16_t Speed);
+	int moveRW(unsigned char ID, int16_t Position);
+	int moveSpeedRW(unsigned char ID, int16_t Position, int16_t Speed);
 
 	void action(void);
 
 	int setTempLimit(unsigned char ID, unsigned char Temperature);
-	int setAngleLimit(unsigned char ID, int CWLimit, int CCWLimit);
+	int setAngleLimit(unsigned char ID, int16_t CWLimit, int16_t CCWLimit);
 	int setVoltageLimit(unsigned char ID, unsigned char DVoltage, unsigned char UVoltage);
-	int setMaxTorque(unsigned char ID, int MaxTorque);
+	int setMaxTorque(unsigned char ID, int16_t MaxTorque);
 	int setSRL(unsigned char ID, unsigned char SRL);
 	int setRDT(unsigned char ID, unsigned char RDT);
 	int setLEDAlarm(unsigned char ID, unsigned char LEDAlarm);
 	int setShutdownAlarm(unsigned char ID, unsigned char SALARM);
 	int setCMargin(unsigned char ID, unsigned char CWCMargin, unsigned char CCWCMargin);
 	int setCSlope(unsigned char ID, unsigned char CWCSlope, unsigned char CCWCSlope);
-	int setPunch(unsigned char ID, int Punch);
+	int setPunch(unsigned char ID, int16_t Punch);
 
 	int moving(unsigned char ID);
 	int lockRegister(unsigned char ID);
@@ -199,9 +199,10 @@ public:
 
 	int readTemperature(unsigned char ID);
 	int readVoltage(unsigned char ID);
-	int readPosition(unsigned char ID);
+	int16_t readPosition(unsigned char ID);
 	int readSpeed(unsigned char ID);
 	int readLoad(unsigned char ID);
+  uint16_t readTorque(unsigned char ID);
 
 	int torqueStatus(unsigned char ID, bool Status);
 	int ledStatus(unsigned char ID, bool Status);
@@ -209,9 +210,9 @@ public:
 	int sendAXPacket(unsigned char *packet, unsigned int length);
 	void sendAXPacketNoError(unsigned char *packet, unsigned int length);
 
-	int readRegister(unsigned char ID, unsigned char reg, unsigned char reg_len);
-	int writeRegister(unsigned char ID, unsigned char reg, int regValue);
-	int writeRegister2(unsigned char ID, unsigned char reg, int regValue);
+	int16_t readRegister(unsigned char ID, unsigned char reg, unsigned char reg_len);
+	int writeRegister(unsigned char ID, unsigned char reg, uint8_t regValue);
+	int writeRegister2(unsigned char ID, unsigned char reg, uint16_t regValue);
 
 	void manualFlush();
 };
