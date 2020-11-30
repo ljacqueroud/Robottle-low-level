@@ -3,21 +3,21 @@
 ## low-level control
 
 #### State machine
-\1: control
-\2: rotation
-3: setup arm
+1: control\
+2: rotation\
+3: setup arm\
 4: pick bottle
 
 
 ###### 1: control
-Main mode: waits commands from Jetson
-w: forward
-s: backward
-d: right
-a: left
-x: stop
-r: change to rotation mode
-o: change to setup arm mode
+Main mode: waits commands from Jetson\
+w: forward\
+s: backward\
+d: right\
+a: left\
+x: stop\
+r: change to rotation mode\
+o: change to setup arm mode\
 p: change to pick bottle mode
 
 ###### 2: rotation
