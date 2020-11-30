@@ -25,7 +25,7 @@ void setup() {
 
   // start servo communication
   // set to last arg to false when using JETSON to hide error messages
-  setupServo(SERVO_ID, SERVO_BD, SERVO_DIR_PIN, &SERVO_SERIAL, true);
+  setupServo(SERVO_ID, SERVO_BD, SERVO_DIR_PIN, &SERVO_SERIAL, false);
 
   // setup maxon pins
   setupMaxon();

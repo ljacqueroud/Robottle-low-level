@@ -91,8 +91,14 @@ int setupArmMode (int state) {
   /*
   move arm down and up to measure pickup and release positions based on torque
   */
+
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_IN_PROGRESS);
   
   setupPos(SERVO_ID);
+
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_SUCCEDED);
 
   return CONTROL_MODE;
 }
@@ -105,10 +111,21 @@ int pickBottleMode (int state) {
 
   int bottle_found;
 
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_IN_PROGRESS);
+
   bottle_found = movePickup(SERVO_ID);
-  Serial.println(bottle_found);
   delay(100);
   moveRelease(SERVO_ID);
+
+  if(bottle_found) {
+    JETSON_SERIAL.print("s");
+    JETSON_SERIAL.println(TASK_SUCCEDED);
+  }
+  else {
+    JETSON_SERIAL.print("s");
+    JETSON_SERIAL.println(TASK_FAILED);
+  }
 
   return CONTROL_MODE;
 }

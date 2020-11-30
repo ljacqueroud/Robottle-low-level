@@ -141,7 +141,7 @@ void setupPos(int ID) {
 
   // move to pickup position until torque reaches given limit and save pickup position
   moveTo(ID, POS_PICKUP, TORQUE_LIMIT_SETUP);
-  JETSON_SERIAL.println(pos_pickup = (ax12a.readPosition(ID) + POS_SETUP_SHIFT));
+  // JETSON_SERIAL.println(pos_pickup = (ax12a.readPosition(ID) + POS_SETUP_SHIFT));
   moveTo(ID, pos_pickup, TORQUE_LIMIT_HIGH);
   delay(100);
 
@@ -150,7 +150,7 @@ void setupPos(int ID) {
 
   // move to release position until torque reaches given limit and save release position
   moveTo(ID, POS_RELEASE, TORQUE_LIMIT_SETUP);
-  JETSON_SERIAL.println(pos_release = (ax12a.readPosition(ID) - POS_SETUP_SHIFT));
+  // JETSON_SERIAL.println(pos_release = (ax12a.readPosition(ID) - POS_SETUP_SHIFT));
   moveTo(ID, pos_release, TORQUE_LIMIT_HIGH);
 }
 

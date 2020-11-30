@@ -12,7 +12,7 @@
 // ///////////////////////// CONSTANTS ////////////////////////////////////////////////////
 
 
-#define JETSON_SERIAL       Serial
+#define JETSON_SERIAL       Serial2
 #define ARDUINO_BD          9600
 
 
