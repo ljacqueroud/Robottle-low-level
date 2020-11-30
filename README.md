@@ -3,8 +3,8 @@
 ## low-level control
 
 #### State machine
-1: control
-2: rotation
+\1: control
+\2: rotation
 3: setup arm
 4: pick bottle
 
