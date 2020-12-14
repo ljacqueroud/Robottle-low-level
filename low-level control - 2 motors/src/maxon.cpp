@@ -47,8 +47,6 @@ void moveForward() {
   if(abs(readSpeedL()-readSpeedR()) > SPEED_COMPARE) {
     stop();
   }
-
-  stop();
   
   digitalWrite(EN_PIN1, HIGH);
   digitalWrite(EN_PIN2, HIGH);
@@ -72,8 +70,6 @@ void moveBackward() {
     stop();
   }
 
-  stop();
-
   digitalWrite(EN_PIN1, HIGH);
   digitalWrite(EN_PIN2, HIGH);
   // digitalWrite(EN_PIN3, HIGH);
@@ -96,8 +92,6 @@ void moveLeft() {
     stop();
   }
 
-  stop();
-
   digitalWrite(EN_PIN1, HIGH);
   digitalWrite(EN_PIN2, HIGH);
   // digitalWrite(EN_PIN3, LOW);
@@ -115,8 +109,6 @@ void moveRight() {
   if(abs(readSpeedL()+readSpeedR()) > SPEED_COMPARE) {
     stop();
   }
-
-  stop();
 
   digitalWrite(EN_PIN1, HIGH);
   digitalWrite(EN_PIN2, HIGH);
