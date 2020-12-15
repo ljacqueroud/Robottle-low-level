@@ -45,6 +45,9 @@ int controlMode (int state) {
       case 'p':
         stop();
         state = PICK_BOTTLE_MODE;
+      case 'v':
+        stop();
+        state = OFF_MODE;
         break;
       }
     }
@@ -77,7 +80,7 @@ int rotationMode (int state) {
   JETSON_SERIAL.println(TASK_IN_PROGRESS);
 
   moveRight();
-  delay(SPEED_TURN * ROT_CONST);
+  delay(ROT_CONST / (SPEED_TURN - PMW_LOW_SPEED) * ROT_CONST);
   stop();
 
   JETSON_SERIAL.print("s");
@@ -131,4 +134,28 @@ int pickBottleMode (int state) {
   JETSON_SERIAL.println(TASK_SUCCEDED);
 
   return CONTROL_MODE;
+}
+
+
+int offMode (int state) {
+  /*
+  robot is off, cannot do anything
+  */
+
+  // reads commands
+  if(JETSON_SERIAL.available()){
+    val = JETSON_SERIAL.read();
+    
+    if(val != -1)
+    {
+      switch(val)
+      {
+      case 'c':     //Move Forward
+        return CONTROL_MODE;
+      }
+    }
+    else stop();
+  }
+
+  return OFF_MODE;
 }

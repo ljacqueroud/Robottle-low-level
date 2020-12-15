@@ -13,6 +13,7 @@
 #define ROTATION_MODE           1
 #define SETUP_ARM_MODE          2
 #define PICK_BOTTLE_MODE        3
+#define OFF_MODE                9
 
 // messages to send
 #define TASK_FAILED             0
@@ -25,6 +26,7 @@ int controlMode (int state);
 int rotationMode (int state);
 int setupArmMode (int state);
 int pickBottleMode (int state);
+int offMode (int state);
 
 
 

@@ -50,6 +50,10 @@ void loop() {
   case PICK_BOTTLE_MODE:
     state = pickBottleMode(state);
     break;
+
+  case OFF_MODE:
+    state = offMode(state);
+    break;
   
   default:
     break;
