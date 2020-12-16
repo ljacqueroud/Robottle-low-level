@@ -16,9 +16,11 @@ s: backward\
 d: right\
 a: left\
 x: stop\
+
 r: change to rotation mode\
 o: change to setup arm mode\
-p: change to pick bottle mode
+p: change to arm pick bottle mode\
+y: change to bottle picking mode
 
 #### 2: rotation
 Do a 360° turn, then return to control mode
