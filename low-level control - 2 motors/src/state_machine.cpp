@@ -1,9 +1,11 @@
 #include "state_machine.h"
 #include "maxon.h"
 #include "servo.h"
+#include "Ultrasonic.h"
 
 
 char val;
+Ultrasonic ultrasonic(ULTRASONIC_PIN);
 
 
 int controlMode (int state) {
@@ -34,17 +36,27 @@ int controlMode (int state) {
       case 'x':
         stop();
         break;
+
       case 'r':
         stop();
         state = ROTATION_MODE;
         break;
+
       case 'o':
         stop();
         state = SETUP_ARM_MODE;
         break;
+
       case 'p':
         stop();
-        state = PICK_BOTTLE_MODE;
+        state = ARM_PICK_BOTTLE_MODE;
+        break;
+
+      case 'y':
+        stop();
+        state = BOTTLE_PICKING_MODE;
+        break;
+
       case 'v':
         stop();
         state = OFF_MODE;
@@ -107,7 +119,7 @@ int setupArmMode (int state) {
 }
 
 
-int pickBottleMode (int state) {
+int armPickBottleMode (int state) {
   /*
   pick up a bottle and release inside container
   */
@@ -134,6 +146,54 @@ int pickBottleMode (int state) {
   JETSON_SERIAL.println(TASK_SUCCEDED);
 
   return CONTROL_MODE;
+}
+
+int bottlePickingMode (int state) {
+  /*
+  advance until a bottle is detected with ultrasonic sensor
+  */
+
+  long measurement = 1000;
+  long measurement_continuity = 0;
+  long iter = 0;
+
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_IN_PROGRESS);
+
+  // start going forward
+  moveForward();
+
+  while(measurement_continuity < ULTRASONIC_BOTTLE_DETECTION_CONTINUITY && iter < MAX_ITER) {
+    // iter += 1;
+    measurement = ultrasonic.MeasureInCentimeters();
+
+    if(measurement < ULTRASONIC_BOTTLE_DETECTION) {
+      measurement_continuity += 1;
+    }
+    else {
+      measurement_continuity = 0;
+    }
+
+    Serial.print("measurement: ");
+    Serial.println(measurement);
+
+    delay(50);
+  }
+ 
+  // stop when bottle is detected
+  stop();
+  
+  if(iter < MAX_ITER) {
+    // bottle detected, use arm to pick up bottle
+    return ARM_PICK_BOTTLE_MODE;
+  }
+  else {
+    // something went wrong, no bottle was detected
+    JETSON_SERIAL.print("s");
+    JETSON_SERIAL.println(TASK_FAILED);
+
+    return CONTROL_MODE;
+  }
 }
 
 

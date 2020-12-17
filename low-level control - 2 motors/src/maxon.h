@@ -45,7 +45,7 @@
 
 
 // speeds
-#define SPEED_STRAIGHT  220   //speed in pmw 10%-90% of 0-255 (= 26-229)
+#define SPEED_STRAIGHT  150   //speed in pmw 10%-90% of 0-255 (= 26-229)
 #define SPEED_TURN      50
 #define PMW_LOW_SPEED   26    //lowest speed
 #define PMW_HIGH_SPEED  229   //highest speed
@@ -61,6 +61,7 @@
 
 // other constants
 #define ROT_CONST       680    // constant for completing a 360 rotation (time is squared, divided by speed)
+#define MAX_ITER        100    // MAX_ITER*50 = time in ms before quitting BOTTLE_PICKING_MODE in case of no detection
 
 
 // ////////////////// FUNCTIONS ///////////////////////////////////////////////////////

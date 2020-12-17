@@ -10,6 +10,7 @@
 #include "state_machine.h"
 #include "AX12A.h"
 #include "servo.h"
+#include "Ultrasonic.h"
 
 
 
@@ -47,8 +48,12 @@ void loop() {
     state = setupArmMode(state);
     break;
 
-  case PICK_BOTTLE_MODE:
-    state = pickBottleMode(state);
+  case ARM_PICK_BOTTLE_MODE:
+    state = armPickBottleMode(state);
+    break;
+  
+  case BOTTLE_PICKING_MODE:
+    state = bottlePickingMode(state);
     break;
 
   case OFF_MODE:
