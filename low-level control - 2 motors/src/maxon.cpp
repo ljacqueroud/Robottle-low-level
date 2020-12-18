@@ -42,7 +42,7 @@ void setupMaxon() {
 
 // MOVEMENT FUNCTIONS
 
-void moveForward() {
+void moveForward(long speed) {
   //if its not going straight, stop first
   if(abs(readSpeedL()-readSpeedR()) > SPEED_COMPARE) {
     stop();
@@ -58,13 +58,13 @@ void moveForward() {
   // digitalWrite(DIR_PIN3, HIGH);
   // digitalWrite(DIR_PIN4, LOW);
 
-  analogWrite(PWM_PIN1, SPEED_STRAIGHT);
-  analogWrite(PWM_PIN2, SPEED_STRAIGHT);
-  // analogWrite(PWM_PIN3, SPEED_STRAIGHT);
-  // analogWrite(PWM_PIN4, SPEED_STRAIGHT);
+  analogWrite(PWM_PIN1, speed);
+  analogWrite(PWM_PIN2, speed);
+  // analogWrite(PWM_PIN3, speed);
+  // analogWrite(PWM_PIN4, speed);
 }
 
-void moveBackward() {
+void moveBackward(long speed) {
   //if its not going straight, stop first
   if(abs(readSpeedL()-readSpeedR()) > SPEED_COMPARE) {
     stop();
@@ -80,13 +80,13 @@ void moveBackward() {
   // digitalWrite(DIR_PIN3, LOW);
   // digitalWrite(DIR_PIN4, HIGH);
 
-  analogWrite(PWM_PIN1, SPEED_STRAIGHT);
-  analogWrite(PWM_PIN2, SPEED_STRAIGHT);
-  // analogWrite(PWM_PIN3, SPEED_STRAIGHT);
-  // analogWrite(PWM_PIN4, SPEED_STRAIGHT);
+  analogWrite(PWM_PIN1, speed);
+  analogWrite(PWM_PIN2, speed);
+  // analogWrite(PWM_PIN3, speed);
+  // analogWrite(PWM_PIN4, speed);
 }
 
-void moveLeft() {
+void moveLeft(long speedTurn) {
   //if its going straight, stop first
   if(abs(readSpeedL()+readSpeedR()) > SPEED_COMPARE) {
     stop();
@@ -100,11 +100,11 @@ void moveLeft() {
   digitalWrite(DIR_PIN1, LOW);
   digitalWrite(DIR_PIN2, LOW);
   
-  analogWrite(PWM_PIN1, SPEED_TURN);
-  analogWrite(PWM_PIN2, SPEED_TURN);
+  analogWrite(PWM_PIN1, speedTurn);
+  analogWrite(PWM_PIN2, speedTurn);
 }
 
-void moveRight() {
+void moveRight(long speedTurn) {
   //if its going straight, stop first
   if(abs(readSpeedL()+readSpeedR()) > SPEED_COMPARE) {
     stop();
@@ -118,8 +118,8 @@ void moveRight() {
   digitalWrite(DIR_PIN1, HIGH);
   digitalWrite(DIR_PIN2, HIGH);
   
-  analogWrite(PWM_PIN1, SPEED_TURN);
-  analogWrite(PWM_PIN2, SPEED_TURN);
+  analogWrite(PWM_PIN1, speedTurn);
+  analogWrite(PWM_PIN2, speedTurn);
 }
 
 void stop() {

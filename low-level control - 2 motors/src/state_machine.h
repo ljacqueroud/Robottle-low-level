@@ -21,6 +21,8 @@
 #define TASK_SUCCEDED           1
 #define TASK_IN_PROGRESS        2
 
+#define MAX_ITER_SPEED_CHANGE   100   // maximum of iteration when waiting for second char of change speed command 'cX'
+
 
 // functions
 int controlMode (int state);
@@ -29,6 +31,8 @@ int setupArmMode (int state);
 int armPickBottleMode (int state);
 int bottlePickingMode(int state);
 int offMode (int state);
+
+void changeSpeeds (char c);
 
 
 

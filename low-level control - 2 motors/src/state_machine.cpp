@@ -5,9 +5,16 @@
 
 
 char val;
+
+long speed = SPEED_TRAVEL;
+long speedTurn = SPEED_TURN_TRAVEL;
+
 Ultrasonic ultrasonic(ULTRASONIC_PIN);
 
 
+///////////////////////////////////////////////// STATE MACHINE ///////////////////////////////////////////////
+
+///////////////////////////////////////////////// CONTROL ///////////////////////////////////////////////
 int controlMode (int state) {
   /*
   reads the commands and sends speed to SERIAL 
@@ -19,22 +26,27 @@ int controlMode (int state) {
     
     if(val != -1)
     {
+      Serial.println(val);
       switch(val)
       {
       case 'w':     //Move Forward
-        moveForward ();
+        moveForward (speed);
         break;
       case 's':     //Move Backward
-        moveBackward ();
+        moveBackward (speed);
         break;
       case 'a':     //Turn Left
-        moveLeft ();
+        moveLeft (speedTurn);
         break;
       case 'd':     //Turn Right
-        moveRight ();
+        moveRight (speedTurn);
         break;
       case 'x':
         stop();
+        break;
+      
+      case 'e':
+        changeSpeeds(JETSON_SERIAL.read());       // change speeds
         break;
 
       case 'r':
@@ -69,19 +81,20 @@ int controlMode (int state) {
   // reads speeds
   int readSpeed;
 
-  readSpeed = readSpeedL();
-  JETSON_SERIAL.print("l");
-  JETSON_SERIAL.println(readSpeed);
+  // readSpeed = readSpeedL();
+  // JETSON_SERIAL.print("l");
+  // JETSON_SERIAL.println(readSpeed);
   
-  readSpeed = readSpeedR();
-  JETSON_SERIAL.print("r");
-  JETSON_SERIAL.println(readSpeed);
+  // readSpeed = readSpeedR();
+  // JETSON_SERIAL.print("r");
+  // JETSON_SERIAL.println(readSpeed);
 
   return state;
   
 }
 
 
+///////////////////////////////////////////////// ROTATION ///////////////////////////////////////////////
 
 int rotationMode (int state) {
   /*
@@ -91,8 +104,8 @@ int rotationMode (int state) {
   JETSON_SERIAL.print("s");
   JETSON_SERIAL.println(TASK_IN_PROGRESS);
 
-  moveRight();
-  delay(ROT_CONST / (SPEED_TURN - PMW_LOW_SPEED) * ROT_CONST);
+  moveRight(speedTurn);
+  delay(ROT_CONST / (speedTurn - PMW_LOW_SPEED) * ROT_CONST);
   stop();
 
   JETSON_SERIAL.print("s");
@@ -101,6 +114,8 @@ int rotationMode (int state) {
   return CONTROL_MODE;
 }
 
+
+///////////////////////////////////////////////// SETUP ARM ///////////////////////////////////////////////
 
 int setupArmMode (int state) {
   /*
@@ -119,15 +134,14 @@ int setupArmMode (int state) {
 }
 
 
+///////////////////////////////////////////////// ARM PICK BOTTLE ///////////////////////////////////////////////
+
 int armPickBottleMode (int state) {
   /*
   pick up a bottle and release inside container
   */
 
   int bottle_found;
-
-  JETSON_SERIAL.print("s");
-  JETSON_SERIAL.println(TASK_IN_PROGRESS);
 
   bottle_found = movePickup(SERVO_ID);
   delay(100);
@@ -148,6 +162,9 @@ int armPickBottleMode (int state) {
   return CONTROL_MODE;
 }
 
+
+///////////////////////////////////////////////// BOTTLE PICKING ///////////////////////////////////////////////
+
 int bottlePickingMode (int state) {
   /*
   advance until a bottle is detected with ultrasonic sensor
@@ -161,10 +178,10 @@ int bottlePickingMode (int state) {
   JETSON_SERIAL.println(TASK_IN_PROGRESS);
 
   // start going forward
-  moveForward();
+  moveForward(speed);
 
   while(measurement_continuity < ULTRASONIC_BOTTLE_DETECTION_CONTINUITY && iter < MAX_ITER) {
-    // iter += 1;
+    iter += 1;
     measurement = ultrasonic.MeasureInCentimeters();
 
     if(measurement < ULTRASONIC_BOTTLE_DETECTION) {
@@ -185,7 +202,11 @@ int bottlePickingMode (int state) {
   
   if(iter < MAX_ITER) {
     // bottle detected, use arm to pick up bottle
-    return ARM_PICK_BOTTLE_MODE;
+    delay(2000);
+    JETSON_SERIAL.print("s");
+    JETSON_SERIAL.println(TASK_SUCCEDED);
+    return CONTROL_MODE;
+    // return ARM_PICK_BOTTLE_MODE;
   }
   else {
     // something went wrong, no bottle was detected
@@ -196,6 +217,8 @@ int bottlePickingMode (int state) {
   }
 }
 
+
+///////////////////////////////////////////////// OFF ///////////////////////////////////////////////
 
 int offMode (int state) {
   /*
@@ -218,4 +241,40 @@ int offMode (int state) {
   }
 
   return OFF_MODE;
+}
+
+
+////////////////////////////////// utils ////////////////////////////
+
+void changeSpeeds (char c) {
+  /*
+  change speeds depending on MODE:
+  1: travel mode
+  2: random search mode
+  */
+
+  int iter = 0;
+
+  while(!JETSON_SERIAL.available() && iter < MAX_ITER_SPEED_CHANGE) {       // wait to make sure another char is there
+    iter += 1;
+    delay(10);
+  }
+  
+  if(iter < MAX_ITER_SPEED_CHANGE) {
+    switch(JETSON_SERIAL.read())
+    {
+    case '1':
+      speed = SPEED_TRAVEL;
+      speedTurn = SPEED_TURN_TRAVEL;
+      break;
+    
+    case '2':
+      speed = SPEED_RANDOM_SEARCH;
+      speedTurn = SPEED_TURN_RANDOM_SEARCH;
+      break;
+
+    default:
+      break;
+    }
+  }
 }

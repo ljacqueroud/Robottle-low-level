@@ -45,8 +45,11 @@
 
 
 // speeds
-#define SPEED_STRAIGHT  150   //speed in pmw 10%-90% of 0-255 (= 26-229)
-#define SPEED_TURN      50
+#define SPEED_TRAVEL              220   //speed in pmw 10%-90% of 0-255 (= 26-229)
+#define SPEED_TURN_TRAVEL         80
+#define SPEED_RANDOM_SEARCH       140
+#define SPEED_TURN_RANDOM_SEARCH  50
+
 #define PMW_LOW_SPEED   26    //lowest speed
 #define PMW_HIGH_SPEED  229   //highest speed
 #define ZERO_SPEED      2     //speed low enough for turning off motors
@@ -70,10 +73,10 @@
 void setupMaxon();
 
 // MOVE
-void moveForward();
-void moveBackward();
-void moveLeft();
-void moveRight();
+void moveForward(long speed);
+void moveBackward(long speed);
+void moveLeft(long speedTurn);
+void moveRight(long speedTurn);
 void stop();
 
 // READ SPEED
