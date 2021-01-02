@@ -8,6 +8,10 @@
 int16_t pos_pickup = 77;
 int16_t pos_release = 797;
 
+// positions of closed and open door
+int16_t pos_open_door = 0;
+int16_t pos_closed_door = 10;
+
 
 // //////////////////////////// RESET FUNCTIONS //////////////////////////////////////////////////////////
 
@@ -93,7 +97,7 @@ void setupServo(unsigned char ID, long BaudRate, unsigned char DirectionPin, Har
 
 
 
-// //////////////////////////// MOVE FUNCTIONS //////////////////////////////////////////////////////////
+// //////////////////////////// MOVE FUNCTION //////////////////////////////////////////////////////////
 
 int moveTo(int ID, int16_t target, uint16_t tor_lim)
 {
@@ -135,7 +139,14 @@ int moveTo(int ID, int16_t target, uint16_t tor_lim)
   return torque_lim_reached;
 }
 
+
+// //////////////////////////// ARM SERVO FUNCTIONS //////////////////////////////////////////////////////////
+
 void setupPos(int ID) {
+  /*
+  move down and up until a torque is felt, keep those positions as pickup and release positions
+  */
+
   // move to middle position
   moveTo(ID, POS_MID, TORQUE_LIMIT_HIGH);
 
@@ -156,7 +167,11 @@ void setupPos(int ID) {
 
 
 int movePickup(int ID) {
-
+  /*
+  move to pickup position
+  returns true if a bottle was detected by the arm
+  */
+  
   int torque_lim_reached;
   int bottle_pickedup = 0;
 
@@ -175,7 +190,11 @@ int movePickup(int ID) {
   return bottle_pickedup;
 }
 
+
 int moveRelease(int ID) {
+  /*
+  move to release position
+  */
 
   int torque_lim_reached;
   
@@ -188,4 +207,19 @@ int moveRelease(int ID) {
   }
 
   return torque_lim_reached;
+}
+
+
+// //////////////////////////// DOOR SERVO FUNCTIONS //////////////////////////////////////////////////////////
+
+void releaseDoor(int ID) {
+  /*
+  opens and closes the door to release the bottle
+  */
+
+  moveTo(ID, pos_open_door, TORQUE_LIMIT_HIGH);
+
+  delay(1000);
+
+  moveTo(ID, pos_closed_door, TORQUE_LIMIT_CLOSE_DOOR);
 }

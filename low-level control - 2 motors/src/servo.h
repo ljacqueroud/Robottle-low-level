@@ -14,7 +14,8 @@
 #define SERVO_SERIAL                Serial1
 #define SERVO_DIR_PIN             	18
 #define SERVO_BD       		          200000
-#define SERVO_ID 						        2
+#define SERVO_ID 						        11
+#define SERVO_DOOR_ID               2
 #define SERVO_MOV_SPEED             100
 
 
@@ -23,6 +24,7 @@
 #define TORQUE_LIMIT_SETUP          300         // torque limit for measuring the pickup and release position
 #define TORQUE_LIMIT_PICKUP         400         // torque limit when picking up a bottle
 #define TORQUE_LIMIT_RELEASE        600         // torque limit when releasing a bottle
+#define TORQUE_LIMIT_CLOSE_DOOR     600         // torque limit when closing the back door
 #define TORQUE_LIMIT_LOW            200         // low torque limit
 #define TORQUE_LIMIT_HIGH           800         // high torque limit
 #define TORQUE_LIMIT_COUNT          50          // limit for iterations to check if arm stuck
@@ -46,6 +48,7 @@ void moveTo(int id, uint16_t target);
 void setupPos(int ID);
 int movePickup(int ID);
 int moveRelease(int ID);
+void releaseDoor(int ID);
 
 
 

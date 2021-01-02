@@ -12,8 +12,9 @@
 #define CONTROL_MODE            0
 #define ROTATION_MODE           1
 #define SETUP_ARM_MODE          2
-#define ARM_PICK_BOTTLE_MODE    3
-#define BOTTLE_PICKING_MODE     4
+#define BOTTLE_PICKING_MODE     3
+#define BOTTLE_REACHING_MODE    4
+#define RELEASE_MODE            5
 #define OFF_MODE                9
 
 // messages to send
@@ -28,11 +29,12 @@
 int controlMode (int state);
 int rotationMode (int state);
 int setupArmMode (int state);
-int armPickBottleMode (int state);
-int bottlePickingMode(int state);
+int bottlePickingMode (int state);
+int bottleReachingMode(int state);
+int releaseMode(int state);
 int offMode (int state);
 
-void changeSpeeds (char c);
+void changeSpeeds ();
 
 
 

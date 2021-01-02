@@ -45,8 +45,8 @@ int controlMode (int state) {
         stop();
         break;
       
-      case 'e':
-        changeSpeeds(JETSON_SERIAL.read());       // change speeds
+      case 'm':
+        changeSpeeds();       // change speeds
         break;
 
       case 'r':
@@ -61,12 +61,16 @@ int controlMode (int state) {
 
       case 'p':
         stop();
-        state = ARM_PICK_BOTTLE_MODE;
+        state = BOTTLE_PICKING_MODE;
         break;
 
       case 'y':
         stop();
-        state = BOTTLE_PICKING_MODE;
+        state = BOTTLE_REACHING_MODE;
+        break;
+
+      case 'q':
+        state = RELEASE_MODE;
         break;
 
       case 'v':
@@ -81,13 +85,13 @@ int controlMode (int state) {
   // reads speeds
   int readSpeed;
 
-  // readSpeed = readSpeedL();
-  // JETSON_SERIAL.print("l");
-  // JETSON_SERIAL.println(readSpeed);
+  readSpeed = readSpeedL();
+  JETSON_SERIAL.print("l");
+  JETSON_SERIAL.println(readSpeed);
   
-  // readSpeed = readSpeedR();
-  // JETSON_SERIAL.print("r");
-  // JETSON_SERIAL.println(readSpeed);
+  readSpeed = readSpeedR();
+  JETSON_SERIAL.print("r");
+  JETSON_SERIAL.println(readSpeed);
 
   return state;
   
@@ -104,8 +108,8 @@ int rotationMode (int state) {
   JETSON_SERIAL.print("s");
   JETSON_SERIAL.println(TASK_IN_PROGRESS);
 
-  moveRight(speedTurn);
-  delay(ROT_CONST / (speedTurn - PMW_LOW_SPEED) * ROT_CONST);
+  moveRight(SPEED_ROTATION_MODE);
+  delay(ROT_CONST / (SPEED_ROTATION_MODE - PMW_LOW_SPEED) * ROT_CONST);
   stop();
 
   JETSON_SERIAL.print("s");
@@ -134,38 +138,9 @@ int setupArmMode (int state) {
 }
 
 
-///////////////////////////////////////////////// ARM PICK BOTTLE ///////////////////////////////////////////////
+///////////////////////////////////////////////// BOTTLE REACHING ///////////////////////////////////////////////
 
-int armPickBottleMode (int state) {
-  /*
-  pick up a bottle and release inside container
-  */
-
-  int bottle_found;
-
-  bottle_found = movePickup(SERVO_ID);
-  delay(100);
-  moveRelease(SERVO_ID);
-
-  // send message to jetson
-  // if(bottle_found) {
-  //   JETSON_SERIAL.print("s");
-  //   JETSON_SERIAL.println(TASK_SUCCEDED);
-  // }
-  // else {
-  //   JETSON_SERIAL.print("s");
-  //   JETSON_SERIAL.println(TASK_FAILED);
-  // }
-  JETSON_SERIAL.print("s");
-  JETSON_SERIAL.println(TASK_SUCCEDED);
-
-  return CONTROL_MODE;
-}
-
-
-///////////////////////////////////////////////// BOTTLE PICKING ///////////////////////////////////////////////
-
-int bottlePickingMode (int state) {
+int bottleReachingMode (int state) {
   /*
   advance until a bottle is detected with ultrasonic sensor
   */
@@ -181,9 +156,16 @@ int bottlePickingMode (int state) {
   moveForward(speed);
 
   while(measurement_continuity < ULTRASONIC_BOTTLE_DETECTION_CONTINUITY && iter < MAX_ITER) {
-    iter += 1;
-    measurement = ultrasonic.MeasureInCentimeters();
+    // check if there is a message from jetson
+    if(JETSON_SERIAL.available()) {
+      return CONTROL_MODE;
+    }
 
+    iter += 1;
+    // get measurement from ultrasonic sensor
+    measurement = ultrasonic.MeasureInCentimeters();
+    
+    // check if it detected a bottle
     if(measurement < ULTRASONIC_BOTTLE_DETECTION) {
       measurement_continuity += 1;
     }
@@ -191,8 +173,8 @@ int bottlePickingMode (int state) {
       measurement_continuity = 0;
     }
 
-    Serial.print("measurement: ");
-    Serial.println(measurement);
+    // Serial.print("measurement: ");
+    // Serial.println(measurement);
 
     delay(50);
   }
@@ -201,20 +183,63 @@ int bottlePickingMode (int state) {
   stop();
   
   if(iter < MAX_ITER) {
-    // bottle detected, use arm to pick up bottle
-    delay(2000);
+    // succesfully found a bottle
     JETSON_SERIAL.print("s");
     JETSON_SERIAL.println(TASK_SUCCEDED);
-    return CONTROL_MODE;
-    // return ARM_PICK_BOTTLE_MODE;
   }
   else {
     // something went wrong, no bottle was detected
     JETSON_SERIAL.print("s");
     JETSON_SERIAL.println(TASK_FAILED);
-
-    return CONTROL_MODE;
   }
+
+  return CONTROL_MODE;
+}
+
+
+///////////////////////////////////////////////// BOTTLE PICKING ///////////////////////////////////////////////
+
+int bottlePickingMode (int state) {
+  /*
+  pick up a bottle and release inside container
+  */
+
+  int bottle_found;
+
+  bottle_found = movePickup(SERVO_ID);
+  delay(100);
+  moveRelease(SERVO_ID);
+
+  // send message to jetson
+  if(bottle_found) {
+    JETSON_SERIAL.print("s");
+    JETSON_SERIAL.println(TASK_SUCCEDED);
+  }
+  else {
+    JETSON_SERIAL.print("s");
+    JETSON_SERIAL.println(TASK_FAILED);
+  }
+
+  return CONTROL_MODE;
+}
+
+
+///////////////////////////////////////////////// RELEASE ///////////////////////////////////////////////
+
+int releaseMode(int state) {
+  /*
+  open the back door to release the bottles
+  */
+
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_IN_PROGRESS);
+
+  releaseDoor(SERVO_DOOR_ID);
+
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_SUCCEDED);
+
+  return CONTROL_MODE;
 }
 
 
@@ -246,7 +271,7 @@ int offMode (int state) {
 
 ////////////////////////////////// utils ////////////////////////////
 
-void changeSpeeds (char c) {
+void changeSpeeds () {
   /*
   change speeds depending on MODE:
   1: travel mode

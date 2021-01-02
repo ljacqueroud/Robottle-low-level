@@ -7,18 +7,12 @@ void setupMaxon() {
   // sets the pin as output/input
   pinMode(PWM_PIN1, OUTPUT);
   pinMode(PWM_PIN2, OUTPUT);
-  // pinMode(PWM_PIN3, OUTPUT);
-  // pinMode(PWM_PIN4, OUTPUT);
   
   pinMode(EN_PIN1, OUTPUT);
   pinMode(EN_PIN2, OUTPUT);
-  // pinMode(EN_PIN3, OUTPUT);
-  // pinMode(EN_PIN4, OUTPUT);
   
   pinMode(DIR_PIN1, OUTPUT);
   pinMode(DIR_PIN2, OUTPUT);
-  // pinMode(DIR_PIN3, OUTPUT);
-  // pinMode(DIR_PIN4, OUTPUT);
 
   pinMode(DIGITAL_OUT1, INPUT);
   pinMode(DIGITAL_OUT2, INPUT);
@@ -30,13 +24,9 @@ void setupMaxon() {
   // default pin setup
   digitalWrite(EN_PIN1, LOW);
   digitalWrite(EN_PIN2, LOW);
-  // digitalWrite(EN_PIN3, LOW);
-  // digitalWrite(EN_PIN4, LOW);
 
   digitalWrite(DIR_PIN1, HIGH);
   digitalWrite(DIR_PIN2, LOW);
-  // digitalWrite(DIR_PIN3, HIGH);
-  // digitalWrite(DIR_PIN4, LOW);
 }
 
 
@@ -50,18 +40,12 @@ void moveForward(long speed) {
   
   digitalWrite(EN_PIN1, HIGH);
   digitalWrite(EN_PIN2, HIGH);
-  // digitalWrite(EN_PIN3, HIGH);
-  // digitalWrite(EN_PIN4, HIGH);
 
   digitalWrite(DIR_PIN1, HIGH);
   digitalWrite(DIR_PIN2, LOW);
-  // digitalWrite(DIR_PIN3, HIGH);
-  // digitalWrite(DIR_PIN4, LOW);
 
   analogWrite(PWM_PIN1, speed);
   analogWrite(PWM_PIN2, speed);
-  // analogWrite(PWM_PIN3, speed);
-  // analogWrite(PWM_PIN4, speed);
 }
 
 void moveBackward(long speed) {
@@ -72,18 +56,12 @@ void moveBackward(long speed) {
 
   digitalWrite(EN_PIN1, HIGH);
   digitalWrite(EN_PIN2, HIGH);
-  // digitalWrite(EN_PIN3, HIGH);
-  // digitalWrite(EN_PIN4, HIGH);
 
   digitalWrite(DIR_PIN1, LOW);
   digitalWrite(DIR_PIN2, HIGH);
-  // digitalWrite(DIR_PIN3, LOW);
-  // digitalWrite(DIR_PIN4, HIGH);
 
   analogWrite(PWM_PIN1, speed);
   analogWrite(PWM_PIN2, speed);
-  // analogWrite(PWM_PIN3, speed);
-  // analogWrite(PWM_PIN4, speed);
 }
 
 void moveLeft(long speedTurn) {
@@ -94,8 +72,6 @@ void moveLeft(long speedTurn) {
 
   digitalWrite(EN_PIN1, HIGH);
   digitalWrite(EN_PIN2, HIGH);
-  // digitalWrite(EN_PIN3, LOW);
-  // digitalWrite(EN_PIN4, LOW);
 
   digitalWrite(DIR_PIN1, LOW);
   digitalWrite(DIR_PIN2, LOW);
@@ -112,8 +88,7 @@ void moveRight(long speedTurn) {
 
   digitalWrite(EN_PIN1, HIGH);
   digitalWrite(EN_PIN2, HIGH);
-  // digitalWrite(EN_PIN3, LOW);
-  // digitalWrite(EN_PIN4, LOW);
+  
   
   digitalWrite(DIR_PIN1, HIGH);
   digitalWrite(DIR_PIN2, HIGH);
@@ -125,8 +100,6 @@ void moveRight(long speedTurn) {
 void stop() {
   analogWrite(PWM_PIN1, PMW_LOW_SPEED);
   analogWrite(PWM_PIN2, PMW_LOW_SPEED);
-  // analogWrite(PWM_PIN3, PMW_LOW_SPEED);
-  // analogWrite(PWM_PIN4, PMW_LOW_SPEED);
 
   //wait until it slows down to almost zero speed or if there is another command
   while(!JETSON_SERIAL.available() && (abs(readSpeedL()) >= ZERO_SPEED && abs(readSpeedR()) >= ZERO_SPEED)) {
@@ -136,8 +109,6 @@ void stop() {
   //disable motors
   digitalWrite(EN_PIN1, LOW);
   digitalWrite(EN_PIN2, LOW);
-  // digitalWrite(EN_PIN3, LOW);
-  // digitalWrite(EN_PIN4, LOW);
 }
 
 float readSpeedL() {

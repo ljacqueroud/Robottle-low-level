@@ -46,9 +46,10 @@
 
 // speeds
 #define SPEED_TRAVEL              220   //speed in pmw 10%-90% of 0-255 (= 26-229)
-#define SPEED_TURN_TRAVEL         80
+#define SPEED_TURN_TRAVEL         50
 #define SPEED_RANDOM_SEARCH       140
 #define SPEED_TURN_RANDOM_SEARCH  50
+#define SPEED_ROTATION_MODE       70
 
 #define PMW_LOW_SPEED   26    //lowest speed
 #define PMW_HIGH_SPEED  229   //highest speed

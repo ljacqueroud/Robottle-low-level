@@ -24,9 +24,10 @@ void setup() {
 // begin communication with arduino
   JETSON_SERIAL.begin(ARDUINO_BD);
 
-  // start servo communication
-  // set to last arg to false when using JETSON to hide error messages
+  // start servo communications
+  // set last arg to false when using JETSON to hide error messages
   setupServo(SERVO_ID, SERVO_BD, SERVO_DIR_PIN, &SERVO_SERIAL, false);
+  setupServo(SERVO_DOOR_ID, SERVO_BD, SERVO_DIR_PIN, &SERVO_SERIAL, false);
 
   // setup maxon pins
   setupMaxon();
@@ -48,12 +49,16 @@ void loop() {
     state = setupArmMode(state);
     break;
 
-  case ARM_PICK_BOTTLE_MODE:
-    state = armPickBottleMode(state);
-    break;
-  
   case BOTTLE_PICKING_MODE:
     state = bottlePickingMode(state);
+    break;
+  
+  case BOTTLE_REACHING_MODE:
+    state = bottleReachingMode(state);
+    break;
+  
+  case RELEASE_MODE:
+    state = releaseMode(state);
     break;
 
   case OFF_MODE:

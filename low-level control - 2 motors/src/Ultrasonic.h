@@ -35,8 +35,8 @@
 
 
 #define ULTRASONIC_PIN                            7
-#define ULTRASONIC_BOTTLE_DETECTION               30  // distance threshhold of bottle detection 
-#define ULTRASONIC_BOTTLE_DETECTION_CONTINUITY    5   // consecutive measurements needed for detecting a bottle
+#define ULTRASONIC_BOTTLE_DETECTION               20  // distance threshhold of bottle detection 
+#define ULTRASONIC_BOTTLE_DETECTION_CONTINUITY    2   // consecutive measurements needed for detecting a bottle
 
 
 class Ultrasonic {
