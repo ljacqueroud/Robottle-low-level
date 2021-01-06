@@ -34,9 +34,15 @@
 #include "Arduino.h"
 
 
-#define ULTRASONIC_PIN                            7
-#define ULTRASONIC_BOTTLE_DETECTION               20  // distance threshhold of bottle detection 
+#define ULTRASONIC_PIN1                           5
+#define ULTRASONIC_PIN2                           6
+#define ULTRASONIC_PIN3                           7
+#define ULTRASONIC_BOTTLE_DETECTION1              16  // distance threshhold of bottle detection for laterla sensors 
+#define ULTRASONIC_BOTTLE_DETECTION2              16  // distance threshhold of bottle detection for central sensor
 #define ULTRASONIC_BOTTLE_DETECTION_CONTINUITY    2   // consecutive measurements needed for detecting a bottle
+#define ULTRASONIC_BOTTLE_CENTERED_CONTINUITY     3   // consecutive measurements needed for detecting a bottle in the center
+
+#define ULTRASONIC_MEASURE_DELAY                  50
 
 
 class Ultrasonic {

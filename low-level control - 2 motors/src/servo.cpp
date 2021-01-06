@@ -5,12 +5,12 @@
 
 // position of pickup and release
 // setup with measured values. 'setupServo' will update these values
-int16_t pos_pickup = 77;
-int16_t pos_release = 797;
+int16_t pos_pickup = 50;
+int16_t pos_release = 940;
 
 // positions of closed and open door
-int16_t pos_open_door = 0;
-int16_t pos_closed_door = 10;
+int16_t pos_open_door = 800;
+int16_t pos_closed_door = 180;
 
 
 // //////////////////////////// RESET FUNCTIONS //////////////////////////////////////////////////////////
@@ -73,25 +73,25 @@ void setupServo(unsigned char ID, long BaudRate, unsigned char DirectionPin, Har
   // set limit min angle to 0
   errorByte = ax12a.writeRegister2(ID, AX_CW_ANGLE_LIMIT_L, 0x0000);     //set max angle
   if(showError && errorByte) {
-    JETSON_SERIAL.println("========== ERROR: CANNOT WRITE REGISTER CW ANGLE LIMIT ========== ");
-    JETSON_SERIAL.print("error byte: ");
-    JETSON_SERIAL.println(errorByte);
+    Serial.println("========== ERROR: CANNOT WRITE REGISTER CW ANGLE LIMIT ========== ");
+    Serial.print("error byte: ");
+    Serial.println(errorByte);
   }
 
   // set limit max angle to 0x03ff
   errorByte = ax12a.writeRegister2(ID, AX_CCW_ANGLE_LIMIT_L, 0x03FF);     //set max angle
   if(showError && errorByte) {
-    JETSON_SERIAL.println("========== ERROR: CANNOT WRITE REGISTER CCW ANGLE LIMIT ========== ");
-    JETSON_SERIAL.print("error byte: ");
-    JETSON_SERIAL.println(errorByte);
+    Serial.println("========== ERROR: CANNOT WRITE REGISTER CCW ANGLE LIMIT ========== ");
+    Serial.print("error byte: ");
+    Serial.println(errorByte);
   }
   
   // set speed of turning
   errorByte = ax12a.writeRegister2(ID, AX_GOAL_SPEED_L, SERVO_MOV_SPEED);     //set speed
   if(showError && errorByte) {
-    JETSON_SERIAL.println("========== ERROR: CANNOT WRITE REGISTER GOAL SPEED ========== ");
-    JETSON_SERIAL.print("error byte: ");
-    JETSON_SERIAL.println(errorByte);
+    Serial.println("========== ERROR: CANNOT WRITE REGISTER GOAL SPEED ========== ");
+    Serial.print("error byte: ");
+    Serial.println(errorByte);
   }
 }
 
@@ -106,32 +106,46 @@ int moveTo(int ID, int16_t target, uint16_t tor_lim)
   */
 
   int16_t pos;
+  int16_t prev_pos;
   uint16_t tor;
+  int pos_count = 0;
   int torque_lim_reached = 0;
-  int torque_lim_count = 0;
 
   ax12a.move(ID, target);
   pos = ax12a.readPosition(ID);
+  tor = ax12a.readTorque(ID);
+  prev_pos = pos;
 
-  while((pos > (target + POS_EPSILON) || (pos + POS_EPSILON) < target)) {
+  
+  // Serial.print(pos);
+  // Serial.print(" ");
+  // Serial.println(tor);
+
+
+  while( (pos > (target + POS_EPSILON) || (pos + POS_EPSILON) < target) && pos_count < POS_CHANGE_COUNT && tor < tor_lim ) {
 
     tor = ax12a.readTorque(ID);
+    pos = ax12a.readPosition(ID);
 
     // counter for checking if arm is stuck
-    if(tor > TORQUE_LIMIT_LOW) {
-      torque_lim_count ++;
+    if(abs(pos - prev_pos) < POS_EPSILON) {
+      pos_count ++;
     }
     else {
-      torque_lim_count = 0;
+      pos_count = 0;
+      prev_pos = pos;
     }
+    
 
     // check if torque too high
-    if((ax12a.readTorque(ID) > tor_lim) || torque_lim_count > TORQUE_LIMIT_COUNT) {
+    if((tor > tor_lim)) {
       torque_lim_reached = 1;
       break;
     }
 
-    pos = ax12a.readPosition(ID);
+    // Serial.print(pos);
+    // Serial.print(" ");
+    // Serial.println(tor);
 
     delay(5);
   }
@@ -139,6 +153,43 @@ int moveTo(int ID, int16_t target, uint16_t tor_lim)
   return torque_lim_reached;
 }
 
+
+void moveToNoTorque(int ID, int16_t target) {
+  /*
+  move to given position. speed is set using writeRegister, no torque limit
+  */
+
+  int16_t pos;
+  int16_t prev_pos;
+  int pos_count = 0;
+
+  ax12a.move(ID, target);
+  pos = ax12a.readPosition(ID);
+  prev_pos = pos;
+
+  
+  // Serial.println(pos);
+
+
+  while( (pos > (target + POS_EPSILON) || (pos + POS_EPSILON) < target) && pos_count < POS_CHANGE_COUNT) {
+
+    pos = ax12a.readPosition(ID);
+
+    // counter for checking if arm is stuck
+    if(abs(pos - prev_pos) < POS_EPSILON) {
+      pos_count ++;
+    }
+    else {
+      pos_count = 0;
+      prev_pos = pos;
+    }
+
+    // Serial.println(pos);
+
+    delay(5);
+  }
+
+}
 
 // //////////////////////////// ARM SERVO FUNCTIONS //////////////////////////////////////////////////////////
 
@@ -148,20 +199,20 @@ void setupPos(int ID) {
   */
 
   // move to middle position
-  moveTo(ID, POS_MID, TORQUE_LIMIT_HIGH);
+  moveToNoTorque(ID, POS_MID);
 
   // move to pickup position until torque reaches given limit and save pickup position
   moveTo(ID, POS_PICKUP, TORQUE_LIMIT_SETUP);
-  // JETSON_SERIAL.println(pos_pickup = (ax12a.readPosition(ID) + POS_SETUP_SHIFT));
+  pos_pickup = (ax12a.readPosition(ID) + POS_SETUP_SHIFT);
   moveTo(ID, pos_pickup, TORQUE_LIMIT_HIGH);
   delay(100);
 
   // move to middle position
-  moveTo(ID, POS_MID, TORQUE_LIMIT_HIGH);
+  moveToNoTorque(ID, POS_MID);
 
   // move to release position until torque reaches given limit and save release position
   moveTo(ID, POS_RELEASE, TORQUE_LIMIT_SETUP);
-  // JETSON_SERIAL.println(pos_release = (ax12a.readPosition(ID) - POS_SETUP_SHIFT));
+  pos_release = (ax12a.readPosition(ID) - POS_SETUP_SHIFT);
   moveTo(ID, pos_release, TORQUE_LIMIT_HIGH);
 }
 
@@ -172,11 +223,15 @@ int movePickup(int ID) {
   returns true if a bottle was detected by the arm
   */
   
-  int torque_lim_reached;
+  int torque_lim_reached = 0;
   int bottle_pickedup = 0;
 
-  moveTo(ID, POS_MID, TORQUE_LIMIT_HIGH);
-  torque_lim_reached = moveTo(ID, pos_pickup, TORQUE_LIMIT_PICKUP);
+  moveToNoTorque(ID, POS_MID);
+  torque_lim_reached = moveTo(ID, POS_STANDING_BOTTLE, TORQUE_LIMIT_STANDING_PIKUP);
+
+  if (!torque_lim_reached) {
+    torque_lim_reached = moveTo(ID, pos_pickup, TORQUE_LIMIT_PICKUP);
+  }
 
   // if torque limit reached: stop (move to current position)
   if(torque_lim_reached) {
@@ -198,8 +253,10 @@ int moveRelease(int ID) {
 
   int torque_lim_reached;
   
-  moveTo(ID, POS_MID, TORQUE_LIMIT_HIGH);
+  moveToNoTorque(ID, POS_MID);
+  ax12a.writeRegister2(ID, AX_GOAL_SPEED_L, SERVO_MOV_HIGH_SPEED); 
   torque_lim_reached = moveTo(ID, pos_release, TORQUE_LIMIT_RELEASE);
+  ax12a.writeRegister2(ID, AX_GOAL_SPEED_L, SERVO_MOV_SPEED); 
 
   // if torque limit reached: stop (move to current position)
   if(torque_lim_reached) {
@@ -212,14 +269,18 @@ int moveRelease(int ID) {
 
 // //////////////////////////// DOOR SERVO FUNCTIONS //////////////////////////////////////////////////////////
 
-void releaseDoor(int ID) {
+void openDoor(int ID) {
   /*
-  opens and closes the door to release the bottle
+  opens the back door
   */
 
-  moveTo(ID, pos_open_door, TORQUE_LIMIT_HIGH);
+  moveTo(ID, pos_open_door, TORQUE_LIMIT_DOOR);
+}
 
-  delay(1000);
+void closeDoor (int ID) {
+  /*
+  closes the back door
+  */
 
-  moveTo(ID, pos_closed_door, TORQUE_LIMIT_CLOSE_DOOR);
+  moveTo(ID, pos_closed_door, TORQUE_LIMIT_DOOR);
 }

@@ -13,8 +13,9 @@
 #define ROTATION_MODE           1
 #define SETUP_ARM_MODE          2
 #define BOTTLE_PICKING_MODE     3
-#define BOTTLE_REACHING_MODE    4
-#define RELEASE_MODE            5
+#define BOTTLE_PICKING2_MODE    4
+#define BOTTLE_REACHING_MODE    5
+#define RELEASE_MODE            6
 #define OFF_MODE                9
 
 // messages to send
@@ -30,11 +31,16 @@ int controlMode (int state);
 int rotationMode (int state);
 int setupArmMode (int state);
 int bottlePickingMode (int state);
+int bottlePicking2Mode (int state);
 int bottleReachingMode(int state);
 int releaseMode(int state);
 int offMode (int state);
 
 void changeSpeeds ();
+int checkBottleInFront();
+int checkBottleCentered();
+int checkBottleSide();
+void alignWithBottle (int sensor_number);
 
 
 

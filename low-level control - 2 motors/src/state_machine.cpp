@@ -9,7 +9,9 @@ char val;
 long speed = SPEED_TRAVEL;
 long speedTurn = SPEED_TURN_TRAVEL;
 
-Ultrasonic ultrasonic(ULTRASONIC_PIN);
+Ultrasonic ultrasonic1(ULTRASONIC_PIN1);    // right side
+Ultrasonic ultrasonic2(ULTRASONIC_PIN2);    // center
+Ultrasonic ultrasonic3(ULTRASONIC_PIN3);    // left side
 
 
 ///////////////////////////////////////////////// STATE MACHINE ///////////////////////////////////////////////
@@ -26,7 +28,7 @@ int controlMode (int state) {
     
     if(val != -1)
     {
-      Serial.println(val);
+      // Serial.println(val);
       switch(val)
       {
       case 'w':     //Move Forward
@@ -64,6 +66,11 @@ int controlMode (int state) {
         state = BOTTLE_PICKING_MODE;
         break;
 
+      case 'P':
+        stop();
+        state = BOTTLE_PICKING2_MODE;
+        break;
+
       case 'y':
         stop();
         state = BOTTLE_REACHING_MODE;
@@ -83,15 +90,15 @@ int controlMode (int state) {
   }
 
   // reads speeds
-  int readSpeed;
+  // int readSpeed;
 
-  readSpeed = readSpeedL();
-  JETSON_SERIAL.print("l");
-  JETSON_SERIAL.println(readSpeed);
+  // readSpeed = readSpeedL();
+  // JETSON_SERIAL.print("l");
+  // JETSON_SERIAL.println(readSpeed);
   
-  readSpeed = readSpeedR();
-  JETSON_SERIAL.print("r");
-  JETSON_SERIAL.println(readSpeed);
+  // readSpeed = readSpeedR();
+  // JETSON_SERIAL.print("r");
+  // JETSON_SERIAL.println(readSpeed);
 
   return state;
   
@@ -108,8 +115,20 @@ int rotationMode (int state) {
   JETSON_SERIAL.print("s");
   JETSON_SERIAL.println(TASK_IN_PROGRESS);
 
+  
+  // rotate 45 degrees
   moveRight(SPEED_ROTATION_MODE);
-  delay(ROT_CONST / (SPEED_ROTATION_MODE - PMW_LOW_SPEED) * ROT_CONST);
+  delay(ROT_MODE_ROT_TIME/ 6 / (SPEED_ROTATION_MODE - PMW_LOW_SPEED) * ROT_MODE_ROT_TIME);
+  stop();
+
+  // move forward a bit
+  moveForward(SPEED_RANDOM_SEARCH);
+  delay(ROT_MODE_FORWARD_TIME);
+  stop();
+
+  // rotate 360 degrees
+  moveRight(SPEED_ROTATION_MODE);
+  delay(ROT_MODE_ROT_TIME / (SPEED_ROTATION_MODE - PMW_LOW_SPEED) * ROT_MODE_ROT_TIME);
   stop();
 
   JETSON_SERIAL.print("s");
@@ -145,7 +164,7 @@ int bottleReachingMode (int state) {
   advance until a bottle is detected with ultrasonic sensor
   */
 
-  long measurement = 1000;
+  int bottle_in_front = 0;
   long measurement_continuity = 0;
   long iter = 0;
 
@@ -153,8 +172,8 @@ int bottleReachingMode (int state) {
   JETSON_SERIAL.println(TASK_IN_PROGRESS);
 
   // start going forward
-  moveForward(speed);
-
+  moveForward(SPEED_REACHING_MODE);
+  
   while(measurement_continuity < ULTRASONIC_BOTTLE_DETECTION_CONTINUITY && iter < MAX_ITER) {
     // check if there is a message from jetson
     if(JETSON_SERIAL.available()) {
@@ -162,25 +181,25 @@ int bottleReachingMode (int state) {
     }
 
     iter += 1;
-    // get measurement from ultrasonic sensor
-    measurement = ultrasonic.MeasureInCentimeters();
     
+    bottle_in_front = checkBottleInFront();   // returns which sensor sensed the bottle
+
     // check if it detected a bottle
-    if(measurement < ULTRASONIC_BOTTLE_DETECTION) {
+    if(bottle_in_front) {
       measurement_continuity += 1;
     }
     else {
       measurement_continuity = 0;
     }
 
-    // Serial.print("measurement: ");
-    // Serial.println(measurement);
-
-    delay(50);
+    delay(ULTRASONIC_MEASURE_DELAY);
   }
  
   // stop when bottle is detected
   stop();
+
+  // align itself with bottle
+  alignWithBottle(bottle_in_front);
   
   if(iter < MAX_ITER) {
     // succesfully found a bottle
@@ -204,14 +223,39 @@ int bottlePickingMode (int state) {
   pick up a bottle and release inside container
   */
 
-  int bottle_found;
+  int detect_bottle;
 
-  bottle_found = movePickup(SERVO_ID);
-  delay(100);
-  moveRelease(SERVO_ID);
+  // move forward a bit
+  moveForward(SPEED_REACHING_MODE);
+  delay(800);
+  stop();
+
+  delay(1000);
+  detect_bottle = checkBottleInFront();
+
+  if(!detect_bottle) {
+    // move backward a bit
+    moveBackward(SPEED_REACHING_MODE);
+    delay(800);
+    stop();
+  }
+
+  for (int i = 0; i < PICK_UP_TRIALS; i++) {
+    movePickup(SERVO_ID);
+    delay(200);
+    moveRelease(SERVO_ID);
+
+    // if there is no bottle, it picked it up
+    detect_bottle = checkBottleInFront();
+
+    if (!detect_bottle)
+      break;
+
+    delay(200);
+  }
 
   // send message to jetson
-  if(bottle_found) {
+  if(!detect_bottle) {
     JETSON_SERIAL.print("s");
     JETSON_SERIAL.println(TASK_SUCCEDED);
   }
@@ -221,6 +265,36 @@ int bottlePickingMode (int state) {
   }
 
   return CONTROL_MODE;
+}
+
+
+///////////////////////////////////////////////// BOTTLE PICKING 2 ///////////////////////////////////////////////
+
+int bottlePicking2Mode (int state) {
+  /*
+  bottle is standing up: advance, align, pickup
+  */
+
+  // move forward a bit
+  moveForward(SPEED_REACHING_MODE);
+  delay(1000);
+  stop();
+
+  // wait a little bit
+  delay(1000);
+
+  // detect bottle
+  int sensor = checkBottleInFront();
+
+  if(sensor) {
+    // align with bottle
+    alignWithBottle(sensor);
+  }
+
+  // pick up the bottle
+  state = bottlePickingMode(BOTTLE_PICKING_MODE);
+
+  return state;
 }
 
 
@@ -234,7 +308,23 @@ int releaseMode(int state) {
   JETSON_SERIAL.print("s");
   JETSON_SERIAL.println(TASK_IN_PROGRESS);
 
-  releaseDoor(SERVO_DOOR_ID);
+  // rotate of 180 degrees
+  moveRight(SPEED_ROTATION_MODE);
+  delay(ROT_MODE_ROT_TIME/2 / (SPEED_ROTATION_MODE - PMW_LOW_SPEED) * ROT_MODE_ROT_TIME);
+  stop();
+
+  openDoor(SERVO_DOOR_ID);
+
+  // shake a little bit
+  for (int i; i<5; i++) {
+    moveLeft(SPEED_TURN_RELEASE_MODE);
+    delay(100);
+    moveRight(SPEED_TURN_RELEASE_MODE);
+    delay(100);
+  }
+  stop();
+
+  closeDoor(SERVO_DOOR_ID);
 
   JETSON_SERIAL.print("s");
   JETSON_SERIAL.println(TASK_SUCCEDED);
@@ -301,5 +391,101 @@ void changeSpeeds () {
     default:
       break;
     }
+  }
+}
+
+
+int checkBottleInFront() {
+  /*
+  returns 0 if no bottle is detected, 1,2,3 otherwise, depending on the sensor
+  */
+
+  long measurement1 = ultrasonic1.MeasureInCentimeters();
+  long measurement2 = ultrasonic2.MeasureInCentimeters();
+  long measurement3 = ultrasonic3.MeasureInCentimeters();
+
+  // Serial.print("measurements: ");
+  // Serial.print(measurement1);
+  // Serial.print(" ");
+  // Serial.print(measurement2);
+  // Serial.print(" ");
+  // Serial.println(measurement3);
+
+  if (measurement2 < ULTRASONIC_BOTTLE_DETECTION2) {
+    return 2;
+  }
+  else if (measurement1 < ULTRASONIC_BOTTLE_DETECTION1) {
+    return 1;
+  }
+  else if (measurement3 < ULTRASONIC_BOTTLE_DETECTION1) {
+    return 3;
+  }
+
+  return 0;
+}
+
+
+int checkBottleCentered() {
+  /*
+  returns true if bottle is in centered in front of robot
+  */
+
+  int bottle_centered;
+  long measurement = ultrasonic2.MeasureInCentimeters();
+
+  bottle_centered = measurement < ULTRASONIC_BOTTLE_DETECTION2;
+
+  // Serial.print("measure 2: ");
+  // Serial.println(measurement);
+
+  return bottle_centered;
+}
+
+
+int checkBottleSide() {
+  /*
+  returns 0 if bottle on left side, 1 if bottle on right side, 2 if bottle is neither
+  */
+
+  long measurement1 = ultrasonic1.MeasureInCentimeters();
+  long measurement3 = ultrasonic3.MeasureInCentimeters();
+
+  
+  // Serial.print("measure 1, 3: ");
+  // Serial.print(measurement1);
+  // Serial.print(" ");
+  // Serial.println(measurement3);
+
+  if (measurement1 < ULTRASONIC_BOTTLE_DETECTION1 && measurement3 >= ULTRASONIC_BOTTLE_DETECTION1) {
+    return 1;
+  }
+  else if (measurement1 >= ULTRASONIC_BOTTLE_DETECTION1 && measurement3 < ULTRASONIC_BOTTLE_DETECTION1) {
+    return 0;
+  }
+  else if (measurement1 < ULTRASONIC_BOTTLE_DETECTION1 && measurement3 < ULTRASONIC_BOTTLE_DETECTION1) {
+    if (measurement1 < measurement3) {
+      return 1;
+    }
+    else {
+      return 0;
+    }
+  }
+  
+  return 2;
+}
+
+
+void alignWithBottle (int sensor_number) {
+  if (sensor_number == 3) {
+    // turn 30 degrees
+    moveLeft(SPEED_TURN_REACHING_MODE);
+    delay(ROT_MODE_ROT_TIME/ 20 / (SPEED_TURN_REACHING_MODE - PMW_LOW_SPEED) * ROT_MODE_ROT_TIME);
+    stop();
+  }
+  else if (sensor_number == 1) {
+    // turn 30 degrees
+    moveRight(SPEED_TURN_REACHING_MODE);
+    delay(ROT_MODE_ROT_TIME/ 20 / (SPEED_TURN_REACHING_MODE - PMW_LOW_SPEED) * ROT_MODE_ROT_TIME);
+    stop();
   }
 }

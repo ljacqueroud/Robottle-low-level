@@ -52,6 +52,10 @@ void loop() {
   case BOTTLE_PICKING_MODE:
     state = bottlePickingMode(state);
     break;
+
+  case BOTTLE_PICKING2_MODE:
+    state = bottlePicking2Mode(state);
+    break;
   
   case BOTTLE_REACHING_MODE:
     state = bottleReachingMode(state);

@@ -12,7 +12,7 @@
 // ///////////////////////// CONSTANTS ////////////////////////////////////////////////////
 
 
-#define JETSON_SERIAL       Serial2
+#define JETSON_SERIAL       Serial
 #define ARDUINO_BD          9600
 
 
@@ -45,11 +45,14 @@
 
 
 // speeds
-#define SPEED_TRAVEL              220   //speed in pmw 10%-90% of 0-255 (= 26-229)
+#define SPEED_TRAVEL              170   //speed in pmw 10%-90% of 0-255 (= 26-229)
 #define SPEED_TURN_TRAVEL         50
 #define SPEED_RANDOM_SEARCH       140
 #define SPEED_TURN_RANDOM_SEARCH  50
-#define SPEED_ROTATION_MODE       70
+#define SPEED_REACHING_MODE       100
+#define SPEED_TURN_REACHING_MODE  45
+#define SPEED_ROTATION_MODE       60
+#define SPEED_TURN_RELEASE_MODE   100
 
 #define PMW_LOW_SPEED   26    //lowest speed
 #define PMW_HIGH_SPEED  229   //highest speed
@@ -64,8 +67,9 @@
 #define GEAR_RATIO      60
 
 // other constants
-#define ROT_CONST       680    // constant for completing a 360 rotation (time is squared, divided by speed)
-#define MAX_ITER        100    // MAX_ITER*50 = time in ms before quitting BOTTLE_PICKING_MODE in case of no detection
+#define ROT_MODE_ROT_TIME       700  // constant for completing a 360 rotation (time is squared, divided by speed)
+#define ROT_MODE_FORWARD_TIME   4000 // amount of time it moves forward
+#define MAX_ITER                100    // MAX_ITER*50 = time in ms before quitting BOTTLE_PICKING_MODE in case of no detection
 
 
 // ////////////////// FUNCTIONS ///////////////////////////////////////////////////////
