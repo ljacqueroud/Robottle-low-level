@@ -5,12 +5,9 @@
 
 // position of pickup and release
 // setup with measured values. 'setupServo' will update these values
-int16_t pos_pickup = 50;
+int16_t pos_pickup = 40;
 int16_t pos_release = 940;
 
-// positions of closed and open door
-int16_t pos_open_door = 800;
-int16_t pos_closed_door = 180;
 
 
 // //////////////////////////// RESET FUNCTIONS //////////////////////////////////////////////////////////
@@ -93,6 +90,7 @@ void setupServo(unsigned char ID, long BaudRate, unsigned char DirectionPin, Har
     Serial.print("error byte: ");
     Serial.println(errorByte);
   }
+
 }
 
 
@@ -274,7 +272,13 @@ void openDoor(int ID) {
   opens the back door
   */
 
-  moveTo(ID, pos_open_door, TORQUE_LIMIT_DOOR);
+  int torque_lim_reached;
+
+  moveToNoTorque(ID, POS_MID_DOOR);
+  torque_lim_reached = moveTo(ID, POS_OPEN_DOOR, TORQUE_LIMIT_DOOR);
+  if(torque_lim_reached) {
+    moveTo(ID, ax12a.readPosition(ID), TORQUE_LIMIT_DOOR);
+  }
 }
 
 void closeDoor (int ID) {
@@ -282,5 +286,11 @@ void closeDoor (int ID) {
   closes the back door
   */
 
-  moveTo(ID, pos_closed_door, TORQUE_LIMIT_DOOR);
+  int torque_lim_reached;
+
+  moveToNoTorque(ID, POS_MID_DOOR);
+  torque_lim_reached = moveTo(ID, POS_CLOSED_DOOR, TORQUE_LIMIT_DOOR);
+  if(torque_lim_reached) {
+    moveTo(ID, ax12a.readPosition(ID), TORQUE_LIMIT_DOOR);
+  }
 }

@@ -17,16 +17,16 @@
 #define SERVO_ID 						        11
 #define SERVO_DOOR_ID               2
 #define SERVO_MOV_SPEED             200
-#define SERVO_MOV_HIGH_SPEED        400
+#define SERVO_MOV_HIGH_SPEED        250
 
 
 // CONSTANTS
 
 #define TORQUE_LIMIT_SETUP          300         // torque limit for measuring the pickup and release position
-#define TORQUE_LIMIT_PICKUP         400         // torque limit when picking up a laying bottle
+#define TORQUE_LIMIT_PICKUP         600         // torque limit when picking up a laying bottle
 #define TORQUE_LIMIT_STANDING_PIKUP 800
 #define TORQUE_LIMIT_RELEASE        1000        // torque limit when releasing a bottle
-#define TORQUE_LIMIT_DOOR           400         // torque limit when closing the back door
+#define TORQUE_LIMIT_DOOR           800         // torque limit when closing the back door
 #define TORQUE_LIMIT_LOW            180         // low torque limit
 #define TORQUE_LIMIT_HIGH           1000        // high torque limit
 #define TORQUE_LIMIT_COUNT          50          // limit for iterations to check if arm stuck
@@ -40,7 +40,12 @@
 #define POS_PICKUP_TOL              5           // tolerance to check if a bottle was there
 #define POS_CHANGE_COUNT            50          // iteration for not changing position
 
-#define PICK_UP_TRIALS              3           // number of times it can try to pick up a bottle
+// positions of closed and open door
+#define POS_OPEN_DOOR               800
+#define POS_CLOSED_DOOR             250
+#define POS_MID_DOOR                500
+
+#define PICK_UP_TRIALS              2           // number of times it can try to pick up a bottle
 
 
 // FUNCTIONS

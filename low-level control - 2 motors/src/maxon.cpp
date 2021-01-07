@@ -123,3 +123,7 @@ float convertVoltToSpeed(float v) {
   return (v*MAX_RPM/MAX_V)/GEAR_RATIO;
 }
 
+float convertSpeedToRPM(float speed) {
+  return speed/SPEED_TO_RPM;
+}
+

@@ -9,7 +9,7 @@
 
 
 
-// ///////////////////////// CONSTANTS ////////////////////////////////////////////////////
+// ///////////////////////// PINS ////////////////////////////////////////////////////
 
 
 #define JETSON_SERIAL       Serial
@@ -44,15 +44,19 @@
 // ATTENTION: DONT CONNECT TO PIN 9
 
 
+
+// ///////////////////////// CONSTANTS ////////////////////////////////////////////////////
+
 // speeds
-#define SPEED_TRAVEL              170   //speed in pmw 10%-90% of 0-255 (= 26-229)
-#define SPEED_TURN_TRAVEL         50
+#define SPEED_TRAVEL              190   //speed in pmw 10%-90% of 0-255 (= 26-229)
+#define SPEED_TURN_TRAVEL         70
 #define SPEED_RANDOM_SEARCH       140
-#define SPEED_TURN_RANDOM_SEARCH  50
+#define SPEED_TURN_RANDOM_SEARCH  70
 #define SPEED_REACHING_MODE       100
 #define SPEED_TURN_REACHING_MODE  45
-#define SPEED_ROTATION_MODE       60
-#define SPEED_TURN_RELEASE_MODE   100
+#define SPEED_ROTATION_MODE       70
+#define SPEED_TURN_RELEASE_MODE   150
+#define SPEED_ROCKS_MODE          60
 
 #define PMW_LOW_SPEED   26    //lowest speed
 #define PMW_HIGH_SPEED  229   //highest speed
@@ -65,6 +69,7 @@
 #define MAX_RPM         3500  //range for rpm measurement
 #define MAX_V           410   //limit voltage for max speed (409 ~= 4V)
 #define GEAR_RATIO      60
+#define SPEED_TO_RPM    3.51 // conversion constant for speed value to RPM
 
 // other constants
 #define ROT_MODE_ROT_TIME       700  // constant for completing a 360 rotation (time is squared, divided by speed)
@@ -88,6 +93,7 @@ void stop();
 float readSpeedL();
 float readSpeedR();
 float convertVoltToSpeed(float v);
+float convertSpeedToRPM(float speed);
 
 
 

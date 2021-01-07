@@ -4,10 +4,15 @@
 #include "Ultrasonic.h"
 
 
+// global variables
+
 char val;
 
+int speedL, speedR;
 long speed = SPEED_TRAVEL;
 long speedTurn = SPEED_TURN_TRAVEL;
+
+bool has_been_in_rocks = false;
 
 Ultrasonic ultrasonic1(ULTRASONIC_PIN1);    // right side
 Ultrasonic ultrasonic2(ULTRASONIC_PIN2);    // center
@@ -16,7 +21,9 @@ Ultrasonic ultrasonic3(ULTRASONIC_PIN3);    // left side
 
 ///////////////////////////////////////////////// STATE MACHINE ///////////////////////////////////////////////
 
+
 ///////////////////////////////////////////////// CONTROL ///////////////////////////////////////////////
+
 int controlMode (int state) {
   /*
   reads the commands and sends speed to SERIAL 
@@ -75,9 +82,28 @@ int controlMode (int state) {
         stop();
         state = BOTTLE_REACHING_MODE;
         break;
+      case 'Y':
+        stop();
+        state = ROCKS_REACHING_MODE;
+        break;
 
       case 'q':
         state = RELEASE_MODE;
+        break;
+
+      case 'R':
+        stop();
+        state = RECOVERY_MODE;
+        break;
+
+      case 'W':
+        stop();
+        state = RECOVERY2_MODE;
+        break;
+
+      case 'c':
+        stop();
+        state = ROCKS_MODE;
         break;
 
       case 'v':
@@ -86,19 +112,20 @@ int controlMode (int state) {
         break;
       }
     }
-    else stop();
+    else {
+      stop();
+    }
   }
 
   // reads speeds
-  // int readSpeed;
-
-  // readSpeed = readSpeedL();
+  // speedL = readSpeedL();
   // JETSON_SERIAL.print("l");
-  // JETSON_SERIAL.println(readSpeed);
+  // JETSON_SERIAL.println(readSpeedL);
   
   // readSpeed = readSpeedR();
+  // speedR = readSpeedR();
   // JETSON_SERIAL.print("r");
-  // JETSON_SERIAL.println(readSpeed);
+  // JETSON_SERIAL.println(readSpeedL);
 
   return state;
   
@@ -115,7 +142,10 @@ int rotationMode (int state) {
   JETSON_SERIAL.print("s");
   JETSON_SERIAL.println(TASK_IN_PROGRESS);
 
-  
+  // close door
+  moveToNoTorque(SERVO_DOOR_ID, POS_MID_DOOR + 100);
+  closeDoor(SERVO_DOOR_ID);
+
   // rotate 45 degrees
   moveRight(SPEED_ROTATION_MODE);
   delay(ROT_MODE_ROT_TIME/ 6 / (SPEED_ROTATION_MODE - PMW_LOW_SPEED) * ROT_MODE_ROT_TIME);
@@ -201,18 +231,78 @@ int bottleReachingMode (int state) {
   // align itself with bottle
   alignWithBottle(bottle_in_front);
   
-  if(iter < MAX_ITER) {
-    // succesfully found a bottle
-    JETSON_SERIAL.print("s");
-    JETSON_SERIAL.println(TASK_SUCCEDED);
+  if(!JETSON_SERIAL.available()) {
+    if(iter < MAX_ITER) {
+      // succesfully found a bottle
+      JETSON_SERIAL.print("s");
+      JETSON_SERIAL.println(TASK_SUCCEDED);
+    }
+    else {
+      // something went wrong, no bottle was detected
+      JETSON_SERIAL.print("s");
+      JETSON_SERIAL.println(TASK_FAILED);
+    }
   }
-  else {
-    // something went wrong, no bottle was detected
-    JETSON_SERIAL.print("s");
-    JETSON_SERIAL.println(TASK_FAILED);
+  return CONTROL_MODE;
+}
+
+
+///////////////////////////////////////////////// ROCK REACHING ///////////////////////////////////////////////
+
+int rocksReachingMode (int state) {
+  /*
+  Advance til bottles, then turn around and wait for jetson
+  */
+
+  int rock_in_front = 0;
+  long measurement_continuity = 0;
+  long iter = 0;
+
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_IN_PROGRESS);
+
+  // start going forward
+  moveForward(SPEED_REACHING_MODE);
+  
+  while(measurement_continuity < ULTRASONIC_BOTTLE_DETECTION_CONTINUITY && iter < MAX_ITER) {
+    // check if there is a message from jetson
+    if(JETSON_SERIAL.available()) {
+      return CONTROL_MODE;
+    }
+
+    iter += 1;
+    
+    rock_in_front = checkBottleInFront();   // returns which sensor sensed the bottle
+
+    // check if it detected a bottle
+    if(rock_in_front) {
+      measurement_continuity += 1;
+    }
+    else {
+      measurement_continuity = 0;
+    }
+
+    delay(ULTRASONIC_MEASURE_DELAY);
   }
+ 
+  // stop when bottle is detected
+  stop();
+
+  // go backwards a little bit
+  moveBackward(SPEED_RANDOM_SEARCH);
+  delay(1000);
+  stop();
+
+  // rotate of 180 degrees
+  moveRight(SPEED_ROTATION_MODE);
+  delay(ROT_MODE_ROT_TIME/2.1 / (SPEED_ROTATION_MODE - PMW_LOW_SPEED) * ROT_MODE_ROT_TIME);
+  stop();
+
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_SUCCEDED);
 
   return CONTROL_MODE;
+
 }
 
 
@@ -230,14 +320,15 @@ int bottlePickingMode (int state) {
   delay(800);
   stop();
 
-  delay(1000);
+  delay(500);
   detect_bottle = checkBottleInFront();
 
-  if(!detect_bottle) {
-    // move backward a bit
-    moveBackward(SPEED_REACHING_MODE);
-    delay(800);
-    stop();
+  for (int i=0; i<4; i++) {
+    if(!checkBottleInFront()) {
+      moveBackward(SPEED_REACHING_MODE);
+      delay(200);
+      stop();
+    }
   }
 
   for (int i = 0; i < PICK_UP_TRIALS; i++) {
@@ -310,24 +401,115 @@ int releaseMode(int state) {
 
   // rotate of 180 degrees
   moveRight(SPEED_ROTATION_MODE);
-  delay(ROT_MODE_ROT_TIME/2 / (SPEED_ROTATION_MODE - PMW_LOW_SPEED) * ROT_MODE_ROT_TIME);
+  delay(ROT_MODE_ROT_TIME/2.1 / (SPEED_ROTATION_MODE - PMW_LOW_SPEED) * ROT_MODE_ROT_TIME);
   stop();
 
+  // open door
   openDoor(SERVO_DOOR_ID);
 
-  // shake a little bit
-  for (int i; i<5; i++) {
-    moveLeft(SPEED_TURN_RELEASE_MODE);
-    delay(100);
-    moveRight(SPEED_TURN_RELEASE_MODE);
-    delay(100);
+  // shake a little
+  moveForward(PMW_HIGH_SPEED);
+  delay(500);
+  moveBackward(PMW_HIGH_SPEED);
+  delay(800);
+  for (int i=0; i<2; i++) {
+    moveForward(PMW_HIGH_SPEED);
+    delay(800);
+    moveBackward(PMW_HIGH_SPEED);
+    delay(800);
   }
+  moveForward(PMW_HIGH_SPEED);
+  delay(800);
   stop();
 
+  delay(500);
+
+  // close door
   closeDoor(SERVO_DOOR_ID);
 
   JETSON_SERIAL.print("s");
   JETSON_SERIAL.println(TASK_SUCCEDED);
+
+  return CONTROL_MODE;
+}
+
+
+///////////////////////////////////////////////// RECOVERY ///////////////////////////////////////////////
+
+int recoveryMode (int state) {
+  /*
+  robot got stuck, go backward a bit
+  */
+
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_IN_PROGRESS);
+
+  // moveBackward(SPEED_TRAVEL);
+  // delay(1000);
+  // stop();
+  delay(500);
+
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_SUCCEDED);
+
+  return CONTROL_MODE;
+}
+
+
+///////////////////////////////////////////////// RECOVERY 2 ///////////////////////////////////////////////
+
+int recovery2Mode (int state) {
+  /*
+  robot got stuck, go forward a bit
+  */
+
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_IN_PROGRESS);
+
+  moveForward(SPEED_TRAVEL);
+  delay(1500);
+  stop();
+
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_SUCCEDED);
+
+  return CONTROL_MODE;
+}
+
+
+///////////////////////////////////////////////// ROCKS ///////////////////////////////////////////////
+
+int rocksMode (int state) {
+  /*
+  try to cross rocks and pray
+  */
+
+  // start going backwards at max speed
+  moveBackward(PMW_HIGH_SPEED);
+  if(has_been_in_rocks) {
+    delay(5000);
+  }
+  else {
+    has_been_in_rocks = true;
+    delay(4500);
+  }
+  stop();
+
+  // send command to jeston
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_ROCKS);
+
+  // turn 90 degrees right
+  moveRight(SPEED_ROTATION_MODE);
+  delay(ROT_MODE_ROT_TIME/3 / (SPEED_ROTATION_MODE - PMW_LOW_SPEED) * ROT_MODE_ROT_TIME);
+  stop();
+
+  // wait a little bit for slam to catch up
+  delay(1000);
+
+  // sens command to jeston
+  JETSON_SERIAL.print("s");
+  JETSON_SERIAL.println(TASK_ROCKS_FINISHED);
 
   return CONTROL_MODE;
 }
@@ -348,7 +530,7 @@ int offMode (int state) {
     {
       switch(val)
       {
-      case 'c':     //Move Forward
+      case 'c':
         return CONTROL_MODE;
       }
     }

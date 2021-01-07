@@ -31,6 +31,7 @@ void setup() {
 
   // setup maxon pins
   setupMaxon();
+
 }
 
 
@@ -60,9 +61,25 @@ void loop() {
   case BOTTLE_REACHING_MODE:
     state = bottleReachingMode(state);
     break;
-  
+
+  case ROCKS_REACHING_MODE:
+    state = rocksReachingMode(state);
+    break;
+      
   case RELEASE_MODE:
     state = releaseMode(state);
+    break;
+
+  case RECOVERY_MODE:
+    state = recoveryMode (state);
+    break;
+
+  case RECOVERY2_MODE:
+    state = recovery2Mode(state);
+    break;
+
+  case ROCKS_MODE:
+    state = rocksMode(state);
     break;
 
   case OFF_MODE:
