@@ -316,20 +316,20 @@ int bottlePickingMode (int state) {
   int detect_bottle;
 
   // move forward a bit
-  moveForward(SPEED_REACHING_MODE);
-  delay(800);
-  stop();
+  // moveForward(SPEED_REACHING_MODE);
+  // delay(800);
+  // stop();
 
-  delay(500);
+  // delay(500);
   detect_bottle = checkBottleInFront();
 
-  for (int i=0; i<4; i++) {
-    if(!checkBottleInFront()) {
-      moveBackward(SPEED_REACHING_MODE);
-      delay(200);
-      stop();
-    }
-  }
+  // for (int i=0; i<4; i++) {
+  //   if(!checkBottleInFront()) {
+  //     moveBackward(SPEED_REACHING_MODE);
+  //     delay(200);
+  //     stop();
+  //   }
+  // }
 
   for (int i = 0; i < PICK_UP_TRIALS; i++) {
     movePickup(SERVO_ID);
@@ -408,21 +408,21 @@ int releaseMode(int state) {
   openDoor(SERVO_DOOR_ID);
 
   // shake a little
-  moveForward(PMW_HIGH_SPEED);
-  delay(500);
-  moveBackward(PMW_HIGH_SPEED);
-  delay(800);
-  for (int i=0; i<2; i++) {
-    moveForward(PMW_HIGH_SPEED);
-    delay(800);
-    moveBackward(PMW_HIGH_SPEED);
-    delay(800);
-  }
-  moveForward(PMW_HIGH_SPEED);
-  delay(800);
-  stop();
+  // moveForward(PMW_HIGH_SPEED);
+  // delay(500);
+  // moveBackward(PMW_HIGH_SPEED);
+  // delay(800);
+  // for (int i=0; i<2; i++) {
+  //   moveForward(PMW_HIGH_SPEED);
+  //   delay(800);
+  //   moveBackward(PMW_HIGH_SPEED);
+  //   delay(800);
+  // }
+  // moveForward(PMW_HIGH_SPEED);
+  // delay(800);
+  // stop();
 
-  delay(500);
+  delay(1000);
 
   // close door
   closeDoor(SERVO_DOOR_ID);
