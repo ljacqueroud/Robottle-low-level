@@ -400,9 +400,9 @@ int releaseMode(int state) {
   JETSON_SERIAL.println(TASK_IN_PROGRESS);
 
   // rotate of 180 degrees
-  moveRight(SPEED_ROTATION_MODE);
-  delay(ROT_MODE_ROT_TIME/2.1 / (SPEED_ROTATION_MODE - PMW_LOW_SPEED) * ROT_MODE_ROT_TIME);
-  stop();
+  // moveRight(SPEED_ROTATION_MODE);
+  // delay(ROT_MODE_ROT_TIME/2.1 / (SPEED_ROTATION_MODE - PMW_LOW_SPEED) * ROT_MODE_ROT_TIME);
+  // stop();
 
   // open door
   openDoor(SERVO_DOOR_ID);
